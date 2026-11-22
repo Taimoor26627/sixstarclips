@@ -2,7 +2,7 @@ name: Daily streamer report
 
 on:
   schedule:
-    - cron: "43 6 * * *"     # once a day (11:43 AM Pakistan time)
+    - cron: "43 6 * * *"     # once a day (11:43 AM Pakistan time) ok
   workflow_dispatch:
 
 permissions:
