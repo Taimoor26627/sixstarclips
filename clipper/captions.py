@@ -11,15 +11,21 @@ WHITE = "&H00FFFFFF"
 _model_cache = {}
 
 
-def transcribe(path, model_size="small"):
-    """Returns [{"start","end","word"}]. Empty list if speech can't be read."""
+def transcribe(path, model_size="small", language="en"):
+    """Returns [{"start","end","word"}]. Empty list if speech can't be read.
+    language "en" = English captions. Any other value (e.g. "hi", "ur") = speech in that
+    language translated into English captions, so every clip has English captions."""
     from faster_whisper import WhisperModel  # heavy import, only when needed
 
     if model_size not in _model_cache:
         _model_cache[model_size] = WhisperModel(model_size, device="cpu", compute_type="int8")
     model = _model_cache[model_size]
+    if language in (None, "en"):
+        kw = {"language": "en", "task": "transcribe"}
+    else:
+        kw = {"language": None if language == "auto" else language, "task": "translate"}
     segments, _ = model.transcribe(
-        path, language="en", word_timestamps=True, vad_filter=True, beam_size=1
+        path, word_timestamps=True, vad_filter=True, beam_size=1, **kw
     )
     words = []
     for seg in segments:

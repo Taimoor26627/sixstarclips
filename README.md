@@ -52,7 +52,19 @@ Repo > **Settings > Secrets and variables > Actions > New repository secret**:
 
 ---
 
-## Full auto-posting to YouTube (start now, approval takes time)
+## Auto-posting to YouTube through Make (no audit, free)
+
+Make's YouTube app is already verified by Google, so uploads through it go public straight away.
+1. In Make (make.com), go to **Connections > Create a connection > YouTube** and sign in with the channel's Google account.
+2. Claude then builds the Make scenario (webhook > YouTube "Upload a Video") and gives you its webhook URL.
+3. Add it as the GitHub secret `MAKE_WEBHOOK_URL`. Leave `publish.make: true` in `config.yaml`.
+
+Free-plan limits: 5 MB per file (the bot sends a lighter 720p copy when needed) and 1,000 operations a month (about 2 per post, so roughly 15 posts a day at most).
+
+## YouTube streamers
+Entries with `platform: youtube` (CarryMinati, Ducky Bhai, Mythpat, Total Gaming, Payal Gaming, Techno Gamerz, IShowSpeed) are clipped from their past live streams, using YouTube's "Most replayed" graph to find the moments. `language: hi` / `ur` translates Hindi or Urdu speech into English captions. YouTube sometimes blocks downloads from GitHub's servers: if those streamers keep failing in the run log, they can run from your PC instead.
+
+## Full auto-posting to YouTube with your own API project (optional, approval takes time)
 
 YouTube locks anything uploaded through an unaudited API project to **private**, and those videos can't be made public later. So keep `publish.youtube: false` until the audit is approved.
 

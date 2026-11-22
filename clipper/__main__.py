@@ -40,14 +40,15 @@ def summary(md):
             f.write(md + "\n")
 
 
-def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam=None, disclosure=None):
+def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam=None,
+               disclosure=None, language="en"):
     """Captions + render. Returns (duration, transcript_text)."""
     _, _, dur, has_audio = render.probe(src)
     dur = min(dur, float(cfg.get("render", {}).get("max_seconds", 59)))
     words = []
     if cfg.get("captions", {}).get("enabled", True) and has_audio:
         try:
-            words = captions.transcribe(src, cfg["captions"].get("model", "small"))
+            words = captions.transcribe(src, cfg["captions"].get("model", "small"), language)
         except Exception as e:  # noqa: BLE001
             print(f"  captions skipped: {e}")
     ass = captions.build_ass(
@@ -62,23 +63,31 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
     return dur, " ".join(w["word"] for w in words)
 
 
-def cmd_run(args):
-    cfg = load_cfg(args.config)
-    state = st.load()
-    streamers = [s for s in cfg["streamers"] if s.get("enabled")]
+def checklist(s, cfg, yt_id):
+    """Plain-language to-do list sent with every clip."""
+    handle = cfg["channel"]["handle"]
+    tags = " ".join(["#GTA6"] + list(s.get("hashtags", [])))
+    steps = []
+    if yt_id:
+        steps.append(f"YouTube {handle}: already posted ✅ https://youtube.com/shorts/{yt_id}")
+    else:
+        steps.append(f"YouTube Shorts {handle}: upload this video, paste the TITLE and DESCRIPTION below")
+    steps.append(f"TikTok: post this video. Caption: the TITLE + {tags}")
+    steps.append(f"Instagram Reels: post this video. Caption: the TITLE + {tags}")
+    steps.append("X (Twitter): post this video with the TITLE")
+    if s.get("campaign"):
+        steps.append(f"Content Rewards: submit the YouTube and TikTok links to the {s['name']} GTA 6 "
+                     "campaign within 30 minutes of posting")
+    else:
+        steps.append("No campaign for this streamer: nothing to submit. Delete the posts if the streamer ever asks.")
+    return "WHAT TO DO WITH THIS CLIP:\n" + "\n".join(f"{i}. {t}" for i, t in enumerate(steps, 1))
+
+
+def twitch_candidates(streamers, cfg, state, usable, since, now, n):
     sel = cfg["selection"]
-    now = select.now_utc()
-    n = args.max_posts or sel.get("posts_per_run", 1)
-    since = now - timedelta(hours=sel["lookback_hours"])
-
-    def usable(c):
-        return (c["id"] not in state["posted"]
-                and c["view_count"] >= sel["min_views"]
-                and c["duration"] >= sel["min_duration"]
-                and select.parse_time(c["created_at"]) >= since
-                and not select.has_spoiler(c["title"], cfg.get("spoiler_words", [])))
-
-    candidates = []
+    out = []
+    if not streamers:
+        return out
     if os.environ.get("TWITCH_CLIENT_ID") and os.environ.get("TWITCH_CLIENT_SECRET"):
         from .twitch import Twitch
 
@@ -98,30 +107,71 @@ def cmd_run(args):
             for c in tw.clips(u["id"], started, ended):
                 if (not game or c.get("game_id") == game) and usable(c):
                     c["_streamer"] = s
-                    candidates.append(c)
-    else:
-        from . import keyless
+                    out.append(c)
+        return out
 
-        print("No Twitch keys set: reading each streamer's public clips page instead.")
-        for s in streamers:
-            if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
-                continue
-            for c in keyless.list_clips(s["login"]):
-                if usable(c):
-                    c["_streamer"] = s
-                    candidates.append(c)
-        # The clips page doesn't say which game a clip is from, so check the best few one by one.
-        ranked = sorted(candidates, key=lambda c: select.score(c, now), reverse=True)
-        checked, want = [], max(n * 4, 8)
-        for c in ranked:
-            if len(checked) >= want:
-                break
-            g = keyless.clip_game(c["url"])
-            if g and g.strip().lower() == cfg["game_name"].lower():
-                checked.append(c)
-            else:
-                print(f"  skip (game: {g}): {c['title'][:60]}")
-        candidates = checked
+    from . import keyless
+
+    print("Twitch: no keys set, reading each streamer's public clips page.")
+    for s in streamers:
+        if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
+            continue
+        for c in keyless.list_clips(s["login"]):
+            if usable(c):
+                c["_streamer"] = s
+                out.append(c)
+    # The clips page doesn't say which game a clip is from, so check the best few one by one.
+    ranked = sorted(out, key=lambda c: select.score(c, now), reverse=True)
+    checked, want = [], max(n * 4, 8)
+    for c in ranked:
+        if len(checked) >= want:
+            break
+        g = keyless.clip_game(c["url"])
+        if g and g.strip().lower() == cfg["game_name"].lower():
+            checked.append(c)
+        else:
+            print(f"  skip (game: {g}): {c['title'][:60]}")
+    return checked
+
+
+def youtube_candidates(streamers, cfg, state):
+    from . import youtube_source
+
+    sel = cfg["selection"]
+    out = []
+    for s in streamers:
+        if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
+            continue
+        for c in youtube_source.candidates(s, cfg, state, sel.get("youtube_lookback_hours", 72)):
+            if not select.has_spoiler(c["title"], cfg.get("spoiler_words", [])):
+                c["_streamer"] = s
+                out.append(c)
+    return out
+
+
+def cmd_run(args):
+    cfg = load_cfg(args.config)
+    state = st.load()
+    streamers = [s for s in cfg["streamers"] if s.get("enabled")]
+    sel = cfg["selection"]
+    now = select.now_utc()
+    n = args.max_posts or sel.get("posts_per_run", 1)
+    since = now - timedelta(hours=sel["lookback_hours"])
+
+    def usable(c):
+        return (c["id"] not in state["posted"]
+                and c["view_count"] >= sel["min_views"]
+                and c["duration"] >= sel["min_duration"]
+                and select.parse_time(c["created_at"]) >= since
+                and not select.has_spoiler(c["title"], cfg.get("spoiler_words", [])))
+
+    tw_streamers = [s for s in streamers if s.get("platform", "twitch") == "twitch"]
+    yt_streamers = [s for s in streamers if s.get("platform") == "youtube"]
+    candidates = twitch_candidates(tw_streamers, cfg, state, usable, since, now, n)
+    try:
+        candidates += youtube_candidates(yt_streamers, cfg, state)
+    except Exception:  # noqa: BLE001 - YouTube trouble must not stop Twitch clips
+        traceback.print_exc()
     print(f"{len(candidates)} candidate clips from {len(streamers)} streamers")
 
     chosen = select.pick(candidates, n, now)
@@ -134,40 +184,53 @@ def cmd_run(args):
     rows = []
     for c in chosen:
         s = c["_streamer"]
-        print(f"\n> {s['name']}: '{c['title']}' ({c['view_count']} views) {c['url']}")
+        lang = s.get("language", "en")
+        credit = select.credit_text(s)
+        layout = "split" if s.get("facecam") else "blur"
+        disclosure = "#ad" if s.get("campaign") else None
+        print(f"\n> {s['name']}: '{c['title'][:70]}' (score {c['view_count']}) {c['url']}")
         workdir = tempfile.mkdtemp(prefix="clip_")
         try:
-            src = render.download(c["url"], workdir)
-            out_path = os.path.join(OUT_DIR, f"{s['login']}_{c['id'][:24]}.mp4")
+            if "_yt" in c:
+                from . import youtube_source
+                src = youtube_source.fetch(c, workdir)
+            else:
+                src = render.download(c["url"], workdir)
+            out_path = os.path.join(OUT_DIR, f"{s['login']}_{c['id'][-24:]}.mp4")
             # Draft hook from the clip title; refine with transcript if Claude is on.
             hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}},
                                            st.recent_openers(state))
-            dur, transcript = make_short(
-                src, workdir, out_path, hook, f"twitch.tv/{s['login']}", cfg,
-                layout="split" if s.get("facecam") else "blur", facecam=s.get("facecam"),
-                disclosure="#ad" if s.get("campaign") else None,
-            )
+            dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
+                                         facecam=s.get("facecam"), disclosure=disclosure, language=lang)
             if cfg["hooks"].get("use_claude") and transcript:
                 h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
                 if h2 != hook:
                     hook, title = h2, t2
-                    make_short(src, workdir, out_path, hook, f"twitch.tv/{s['login']}", cfg,
-                               layout="split" if s.get("facecam") else "blur", facecam=s.get("facecam"),
-                               disclosure="#ad" if s.get("campaign") else None)
+                    make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
+                               facecam=s.get("facecam"), disclosure=disclosure, language=lang)
             desc, tags = select.describe(c, s, cfg)
 
             yt_id = None
-            if pub.get("youtube") and not args.dry_run:
-                from .publish import youtube_upload
-                yt_id = youtube_upload(out_path, title, desc, tags, pub.get("privacy", "public"),
-                                       paid=bool(s.get("campaign")))
-                print(f"  uploaded: https://youtube.com/shorts/{yt_id}")
+            if not args.dry_run:
+                if pub.get("youtube"):
+                    from .publish import youtube_upload
+                    yt_id = youtube_upload(out_path, title, desc, tags, pub.get("privacy", "public"),
+                                           paid=bool(s.get("campaign")))
+                elif pub.get("make") and os.environ.get("MAKE_WEBHOOK_URL"):
+                    from .publish import make_upload
+                    small = out_path
+                    if os.path.getsize(out_path) > 4_700_000:
+                        small = out_path.replace(".mp4", "_small.mp4")
+                        size = render.export_small(out_path, small)
+                        print(f"  light copy for Make: {size / 1e6:.1f} MB")
+                    yt_id = make_upload(small, title, desc, tags, pub.get("privacy", "public"))
+                if yt_id:
+                    print(f"  uploaded: https://youtube.com/shorts/{yt_id}")
             if pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
                 from .publish import telegram_send, telegram_text
-                telegram_send(out_path, f"{title}\n\n{s['name']} | {c['view_count']} views on Twitch")
-                extra = f"\nPosted: https://youtube.com/shorts/{yt_id}" if yt_id else ""
-                telegram_text(f"TITLE:\n{title}\n\nDESCRIPTION:\n{desc}{extra}"
-                              + ("\n\nSubmit this clip to the campaign within 30 min." if s.get("campaign") else ""))
+                where = "YouTube" if "_yt" in c else "Twitch"
+                telegram_send(out_path, f"{title}\n\n{s['name']} | from {where}")
+                telegram_text(checklist(s, cfg, yt_id) + f"\n\nTITLE:\n{title}\n\nDESCRIPTION:\n{desc}")
             if not args.dry_run:
                 st.record(state, c, s["login"], hook, title, yt_id)
                 st.save(state)
@@ -179,7 +242,7 @@ def cmd_run(args):
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
 
-    summary("| Streamer | Title | Twitch views | Length | Result |\n| --- | --- | --- | --- | --- |\n"
+    summary("| Streamer | Title | Score | Length | Result |\n| --- | --- | --- | --- | --- |\n"
             + "\n".join(rows))
 
 
@@ -190,7 +253,7 @@ def cmd_report(args):
     from .twitch import Twitch
 
     tw = Twitch(env("TWITCH_CLIENT_ID"), env("TWITCH_CLIENT_SECRET"))
-    users = tw.users(s["login"] for s in cfg["streamers"])
+    users = tw.users(s["login"] for s in cfg["streamers"] if s.get("platform", "twitch") == "twitch")
     live = tw.live_streams(u["id"] for u in users.values())
     lines = [
         f"# Streamer numbers ({select.now_utc():%Y-%m-%d %H:%M} UTC)",
@@ -199,6 +262,9 @@ def cmd_report(args):
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for s in cfg["streamers"]:
+        if s.get("platform") == "youtube":
+            lines.append(youtube_report_row(s, 8))
+            continue
         u = users.get(s["login"].lower())
         if not u:
             lines.append(f"| {s['name']} | user not found | | | | | | {s.get('enabled')} |")
@@ -216,6 +282,20 @@ def cmd_report(args):
     summary("\n".join(lines))
 
 
+def youtube_report_row(s, cols):
+    from . import youtube_source
+
+    items = youtube_source.recent_streams(s, max_items=1)
+    if not items:
+        return f"| {s['name']} (YouTube) | not found |" + " |" * (cols - 2)
+    v = items[0]
+    title = (v.get("title") or "").replace("|", "/")[:60]
+    cells = [f"{s['name']} (YouTube)", title, str(v.get("view_count") or ""),
+             f"{(v.get('duration') or 0) / 3600:.1f}"]
+    cells += [""] * (cols - len(cells) - 1) + [str(s.get("enabled"))]
+    return "| " + " | ".join(cells) + " |"
+
+
 def cmd_report_keyless(cfg):
     from . import keyless
 
@@ -226,6 +306,9 @@ def cmd_report_keyless(cfg):
         "| --- | --- | --- | --- | --- |",
     ]
     for s in cfg["streamers"]:
+        if s.get("platform") == "youtube":
+            lines.append(youtube_report_row(s, 5))
+            continue
         v = keyless.last_vod(s["login"])
         if not v:
             lines.append(f"| {s['name']} | not found | | | {s.get('enabled')} |")

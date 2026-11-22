@@ -118,14 +118,27 @@ def make_hook(clip, streamer, cfg, recent_openers, transcript=""):
     return hook, title[:95]
 
 
+def source_link(streamer):
+    if streamer.get("platform") == "youtube":
+        ch = streamer["channel"]
+        return ch if ch.startswith("http") else f"https://youtube.com/{ch}"
+    return f"https://twitch.tv/{streamer['login']}"
+
+
+def credit_text(streamer):
+    if streamer.get("platform") == "youtube":
+        return "youtube.com/" + streamer["channel"].rstrip("/").split("/")[-1]
+    return f"twitch.tv/{streamer['login']}"
+
+
 def describe(clip, streamer, cfg):
-    name, login = streamer["name"], streamer["login"]
+    name = streamer["name"]
     tags = ["#GTA6", "#Shorts"] + list(streamer.get("hashtags", []))
     lines = []
     if streamer.get("campaign"):
         lines.append("#ad Clipped as part of the creator's official clipping program.")
     lines += [
-        f"All credit to {name}. Watch live: https://twitch.tv/{login}",
+        f"All credit to {name}. Watch live: {source_link(streamer)}",
         f"Original clip: {clip['url']}",
         "",
         f"Daily GTA 6 streamer moments on {cfg['channel']['name']}. Subscribe for more.",

@@ -76,3 +76,24 @@ def telegram_text(text):
     requests.post(f"https://api.telegram.org/bot{token}/sendMessage",
                   data={"chat_id": chat, "text": text[:4000], "disable_web_page_preview": "true"},
                   timeout=60).raise_for_status()
+
+
+def make_upload(path, title, description, tags, privacy="public"):
+    """Send the clip to your Make scenario, which uploads it to YouTube.
+    Make's YouTube app is already verified, so uploads can be public right away."""
+    url = os.environ["MAKE_WEBHOOK_URL"]
+    with open(path, "rb") as f:
+        r = requests.post(
+            url,
+            data={"title": title[:100], "description": description[:4900],
+                  "tags": ",".join(tags), "privacy": privacy},
+            files={"video": (os.path.basename(path), f, "video/mp4")},
+            timeout=600,
+        )
+    r.raise_for_status()
+    text = r.text.strip()
+    try:
+        data = r.json()
+        return data.get("video_id") or data.get("id") or text
+    except ValueError:
+        return text if text and text.lower() != "accepted" else None

@@ -70,3 +70,18 @@ def render(src, ass_path, out_path, cfg, layout="blur", facecam=None, fonts_dir=
     ]
     subprocess.run(cmd, check=True, cwd=workdir, timeout=900)
     return max_s
+
+
+def export_small(src, out_path, max_bytes=4_700_000):
+    """A lighter 720x1280 copy that fits Make's free-plan 5 MB file limit."""
+    _, _, dur, _ = probe(src)
+    audio_kbps = 96
+    video_kbps = min(3500, max(350, int((max_bytes * 8 / 1000) / max(dur, 1) * 0.92) - audio_kbps))
+    subprocess.run(
+        ["ffmpeg", "-y", "-v", "error", "-i", src, "-vf", "scale=720:1280",
+         "-c:v", "libx264", "-preset", "veryfast", "-b:v", f"{video_kbps}k",
+         "-maxrate", f"{int(video_kbps * 1.2)}k", "-bufsize", f"{video_kbps * 2}k",
+         "-c:a", "aac", "-b:a", f"{audio_kbps}k", "-movflags", "+faststart", out_path],
+        check=True, timeout=600,
+    )
+    return os.path.getsize(out_path)

@@ -13,6 +13,8 @@ selection:
   min_duration: 8                  # seconds
   max_per_streamer_per_day: 3      # spread posts across streamers
   posts_per_run: 1                 # each scheduled run posts this many
+  youtube_lookback_hours: 72       # YouTube streams: use streams from the last 3 days
+  youtube_peak_weight: 40000       # how strongly YouTube "most replayed" peaks compete with Twitch clips
 
 publish:
   # YouTube auto-upload. Keep false until YouTube's API audit is approved:
@@ -22,6 +24,9 @@ publish:
   # Telegram: each finished clip + title + description lands on your phone,
   # ready to share to YouTube / TikTok / Instagram / X in a few taps.
   telegram: true
+  # Make: auto-upload to YouTube through your Make.com scenario (no API audit needed).
+  # Needs the MAKE_WEBHOOK_URL secret. Uses a lighter 720p copy (Make free plan = 5 MB files).
+  make: true
 
 render:
   fps: 30
@@ -40,7 +45,7 @@ hooks:
     - "{name} was NOT ready for this"
     - "{name} can't believe what just happened"
     - "this is why {name} is banned from Leonida"
-    - "{name} lost his mind in GTA 6"
+    - "{name} completely lost it in GTA 6"
     - "nobody warned {name} about this"
     - "{name} vs the GTA 6 police"
     - "chat saw it before {name} did"
@@ -92,6 +97,16 @@ streamers:
   - {login: zackrawrr, name: "Asmongold", enabled: false, campaign: false, hashtags: ["#Asmongold"]}
   # IShowSpeed: no official program of his own; most-clipped streamer, enabled at owner's request
   - {login: ishowspeed, name: "IShowSpeed", enabled: true, campaign: false, hashtags: ["#IShowSpeed"]}
+
+  # --- YouTube streamers (platform: youtube). language: hi/ur = Hindi/Urdu speech,
+  # captions are translated into English automatically. Handles marked "check" weren't verified.
+  - {platform: youtube, login: ishowspeed_yt, channel: "@IShowSpeed", name: "IShowSpeed", language: en, enabled: true, campaign: false, hashtags: ["#IShowSpeed"]}
+  - {platform: youtube, login: carryislive, channel: "@CarryisLive", name: "CarryMinati", language: hi, enabled: true, campaign: false, hashtags: ["#CarryMinati"]}   # check
+  - {platform: youtube, login: duckybhai, channel: "@DuckyBhai", name: "Ducky Bhai", language: ur, enabled: true, campaign: false, hashtags: ["#DuckyBhai"]}   # check
+  - {platform: youtube, login: mythpat, channel: "@MYTHPAT", name: "Mythpat", language: hi, enabled: true, campaign: false, hashtags: ["#Mythpat"]}   # check
+  - {platform: youtube, login: totalgaming, channel: "@TotalGaming093", name: "Total Gaming", language: hi, enabled: true, campaign: false, hashtags: ["#TotalGaming"]}   # check
+  - {platform: youtube, login: payalgaming, channel: "@PAYALGAMING", name: "Payal Gaming", language: hi, enabled: true, campaign: false, hashtags: ["#PayalGaming"]}   # check
+  - {platform: youtube, login: technogamerz, channel: "@TechnoGamerzOfficial", name: "Techno Gamerz", language: hi, enabled: true, campaign: false, hashtags: ["#TechnoGamerz"]}
 
   # Optional per-streamer facecam box (in the 1920x1080 source) for the
   # split layout (facecam on top, gameplay below). Example:
