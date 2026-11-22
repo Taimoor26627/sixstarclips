@@ -2,8 +2,9 @@ name: Clip and post
 
 on:
   schedule:
-    # Every 30 minutes (48 runs a day). Each run posts `posts_per_run` clips from config.yaml.
-    - cron: "4,34 * * * *"
+    # Every 4 hours = 6 runs a day (UTC 00:04, 04:04, 08:04, 12:04, 16:04, 20:04).
+    # Each run posts `posts_per_run` clips from config.yaml.
+    - cron: "4 */4 * * *"
   push:
     # Also run right away whenever the settings or this schedule change.
     branches: [main]
