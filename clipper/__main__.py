@@ -67,7 +67,8 @@ def checklist(s, cfg, yt_id):
     """What (if anything) you need to do for this clip. YouTube only."""
     handle = cfg["channel"]["handle"]
     if yt_id == "QUEUED":
-        lines = [f"Sent to YouTube {handle} through Make. It appears on the channel within a few minutes."]
+        lines = [f"Sent to Make for YouTube {handle}, but no video link came back. Check the channel in "
+                 "10 minutes: if it isn't there, upload the video above with the TITLE and DESCRIPTION below."]
     elif yt_id:
         lines = [f"Posted on YouTube {handle} automatically: https://youtube.com/shorts/{yt_id}"]
     else:
@@ -226,7 +227,7 @@ def cmd_run(args):
                     print(f"  uploaded: {yt_id if yt_id == 'QUEUED' else 'https://youtube.com/shorts/' + yt_id}")
             if pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
                 from .publish import telegram_send, telegram_text
-                if yt_id:
+                if yt_id and yt_id != "QUEUED":
                     telegram_text(f"{title}\n\n" + checklist(s, cfg, yt_id))
                 else:  # fallback: send the file so you can upload it yourself
                     telegram_send(out_path, title)
