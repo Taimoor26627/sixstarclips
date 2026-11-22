@@ -3,7 +3,7 @@
 
 channel:
   name: "Six Star Clips"
-  handle: "@SixStarClipsGG"        # change to the handle you actually claim
+  handle: "@SixStarClipsGG1"
 
 game_name: "Grand Theft Auto VI"   # Twitch category to clip from
 
@@ -90,7 +90,8 @@ streamers:
   - {login: stableronaldo, name: "Stable Ronaldo", enabled: false, campaign: false, hashtags: ["#StableRonaldo"]}
   - {login: jynxzi, name: "Jynxzi", enabled: false, campaign: false, hashtags: ["#Jynxzi"]}
   - {login: zackrawrr, name: "Asmongold", enabled: false, campaign: false, hashtags: ["#Asmongold"]}
-  - {login: ishowspeed, name: "IShowSpeed", enabled: false, campaign: false, hashtags: ["#IShowSpeed"]}
+  # IShowSpeed: no official program of his own; most-clipped streamer, enabled at owner's request
+  - {login: ishowspeed, name: "IShowSpeed", enabled: true, campaign: false, hashtags: ["#IShowSpeed"]}
 
   # Optional per-streamer facecam box (in the 1920x1080 source) for the
   # split layout (facecam on top, gameplay below). Example:
