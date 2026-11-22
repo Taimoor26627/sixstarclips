@@ -1,0 +1,97 @@
+# Six Star Clips - automation settings
+# Edit this file on GitHub (pencil icon) to change what the bot does.
+
+channel:
+  name: "Six Star Clips"
+  handle: "@SixStarClipsGG"        # change to the handle you actually claim
+
+game_name: "Grand Theft Auto VI"   # Twitch category to clip from
+
+selection:
+  lookback_hours: 36               # only clips made in the last 36 hours
+  min_views: 200                   # skip Twitch clips with fewer views
+  min_duration: 8                  # seconds
+  max_per_streamer_per_day: 3      # spread posts across streamers
+  posts_per_run: 1                 # each scheduled run posts this many
+
+publish:
+  # YouTube auto-upload. Keep false until YouTube's API audit is approved:
+  # before that, API uploads are locked private forever and can't be fixed.
+  youtube: false
+  privacy: "public"                # public | unlisted | private
+  # Telegram: each finished clip + title + description lands on your phone,
+  # ready to share to YouTube / TikTok / Instagram / X in a few taps.
+  telegram: true
+
+render:
+  fps: 30
+  crf: 21
+  max_seconds: 59
+
+captions:
+  enabled: true
+  model: "small"                   # tiny | base | small (small = best on free runners)
+  censor_profanity: true
+
+hooks:
+  use_claude: true                 # only used if a Claude token secret is set
+  # Fallback hooks when a Twitch clip title is junk. {name} = streamer name.
+  templates:
+    - "{name} was NOT ready for this"
+    - "{name} can't believe what just happened"
+    - "this is why {name} is banned from Leonida"
+    - "{name} lost his mind in GTA 6"
+    - "nobody warned {name} about this"
+    - "{name} vs the GTA 6 police"
+    - "chat saw it before {name} did"
+    - "{name}'s worst GTA 6 moment yet"
+    - "{name} broke GTA 6"
+    - "the moment {name} gave up"
+
+# Words that suggest a story spoiler. Rockstar takes spoilers down, so skip.
+spoiler_words: [ending, "final mission", credits, spoiler, "last mission", "true ending", "dies", "death of", "plot twist"]
+
+# Streamers to clip. Only "enabled: true" ones are used.
+# campaign: true  = you joined their paid clipping campaign (permission built in)
+# Turn others on ONLY after you have written permission from them or their team.
+streamers:
+  - login: kaicenat
+    name: "Kai Cenat"
+    enabled: true
+    campaign: true
+    hashtags: ["#KaiCenat"]
+  - login: lacy
+    name: "Lacy"
+    enabled: true
+    campaign: true
+    hashtags: ["#LACY"]          # required by his campaign
+  - login: clix
+    name: "Clix"
+    enabled: true
+    campaign: true
+    hashtags: ["#Clix"]          # required by his campaign
+  - login: yourragegaming
+    name: "YourRAGE"
+    enabled: true
+    campaign: true
+    hashtags: ["#YourRAGE"]
+  - login: asianjeff
+    name: "AsianJeff"
+    enabled: true
+    campaign: true
+    hashtags: ["#AsianJeff"]
+
+  # --- permission pending: enable only after they say yes ---
+  - {login: xqc, name: "xQc", enabled: false, campaign: false, hashtags: ["#xQc"]}
+  - {login: caseoh_, name: "CaseOh", enabled: false, campaign: false, hashtags: ["#CaseOh"]}
+  - {login: theburntpeanut, name: "TheBurntPeanut", enabled: false, campaign: false, hashtags: ["#TheBurntPeanut"]}
+  - {login: ohnepixel, name: "ohnePixel", enabled: false, campaign: false, hashtags: ["#ohnePixel"]}
+  - {login: jasontheween, name: "JasonTheWeen", enabled: false, campaign: false, hashtags: ["#JasonTheWeen"]}
+  - {login: stableronaldo, name: "Stable Ronaldo", enabled: false, campaign: false, hashtags: ["#StableRonaldo"]}
+  - {login: jynxzi, name: "Jynxzi", enabled: false, campaign: false, hashtags: ["#Jynxzi"]}
+  - {login: zackrawrr, name: "Asmongold", enabled: false, campaign: false, hashtags: ["#Asmongold"]}
+  - {login: ishowspeed, name: "IShowSpeed", enabled: false, campaign: false, hashtags: ["#IShowSpeed"]}
+
+  # Optional per-streamer facecam box (in the 1920x1080 source) for the
+  # split layout (facecam on top, gameplay below). Example:
+  #   facecam: {x: 1460, y: 40, w: 420, h: 300}

@@ -1,0 +1,35 @@
+name: Daily streamer report
+
+on:
+  schedule:
+    - cron: "43 6 * * *"   # once a day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clipper
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests PyYAML
+      - name: Pull latest stream numbers
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: python -m clipper report
+      - name: Save report
+        run: |
+          git config user.name "clip-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports
+          git diff --cached --quiet || (git commit -m "Daily streamer report" && git pull --rebase && git push)
