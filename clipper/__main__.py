@@ -148,6 +148,38 @@ def youtube_candidates(streamers, cfg, state):
     return out
 
 
+def queued_clips(cfg, state):
+    """Clips you asked for by link (config 'queue'), posted before anything else."""
+    import yt_dlp
+
+    by_login = {s["login"]: s for s in cfg["streamers"]}
+    out = []
+    for item in cfg.get("queue") or []:
+        s = by_login.get(item.get("login"))
+        if not s:
+            print(f"Queue: unknown streamer {item.get('login')}")
+            continue
+        try:
+            with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True, "skip_download": True}) as ydl:
+                info = ydl.extract_info(item["url"], download=False) or {}
+        except Exception as e:  # noqa: BLE001
+            print(f"Queue: could not read {item['url']}: {e}")
+            continue
+        cid = str(info.get("id") or item["url"])
+        done = state["posted"].get(cid)
+        if done and done.get("youtube_id"):
+            continue  # already on YouTube
+        out.append({
+            "id": cid, "url": item["url"], "title": item.get("title") or info.get("title") or "",
+            "view_count": int(info.get("view_count") or 0),
+            "created_at": select.now_utc().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "duration": float(info.get("duration") or 0), "_streamer": s, "_queued": True,
+        })
+    if out:
+        print(f"Queue: {len(out)} clip(s) waiting, posting first")
+    return out
+
+
 def cmd_run(args):
     cfg = load_cfg(args.config)
     state = st.load()
@@ -173,7 +205,9 @@ def cmd_run(args):
         traceback.print_exc()
     print(f"{len(candidates)} candidate clips from {len(streamers)} streamers")
 
-    chosen = select.pick(candidates, n, now)
+    queued = queued_clips(cfg, state)
+    chosen = queued[:n] + select.pick([c for c in candidates if c["id"] not in {q["id"] for q in queued}],
+                                      max(0, n - len(queued)), now)
     if not chosen:
         summary("No new clips met the rules this run.")
         return
@@ -197,11 +231,11 @@ def cmd_run(args):
                 src = render.download(c["url"], workdir)
             out_path = os.path.join(OUT_DIR, f"{s['login']}_{c['id'][-24:]}.mp4")
             # Draft hook from the clip title; refine with transcript if Claude is on.
-            hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}},
-                                           st.recent_openers(state))
+            recent = set() if c.get("_queued") else st.recent_openers(state)
+            hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}}, recent)
             dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
                                          facecam=s.get("facecam"), disclosure=disclosure, language=lang)
-            if cfg["hooks"].get("use_claude") and transcript:
+            if cfg["hooks"].get("use_claude") and transcript and not c.get("_queued"):
                 h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
                 if h2 != hook:
                     hook, title = h2, t2

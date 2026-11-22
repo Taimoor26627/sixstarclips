@@ -53,6 +53,12 @@ hooks:
     - "{name} broke GTA 6"
     - "the moment {name} gave up"
 
+# Clips you want posted next, in order (Twitch clip links). Already-posted ones are skipped.
+queue:
+  - login: kaicenat
+    url: "https://www.twitch.tv/kaicenat/clip/LaconicConsiderateCaterpillarKippa-gK9T9i4PZk82S-SA"
+    title: "Kai got motion"
+
 # Words that suggest a story spoiler. Rockstar takes spoilers down, so skip.
 spoiler_words: [ending, "final mission", credits, spoiler, "last mission", "true ending", "dies", "death of", "plot twist"]
 
