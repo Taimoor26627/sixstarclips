@@ -64,23 +64,21 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
 
 
 def checklist(s, cfg, yt_id):
-    """Plain-language to-do list sent with every clip."""
+    """What (if anything) you need to do for this clip. YouTube only."""
     handle = cfg["channel"]["handle"]
-    tags = " ".join(["#GTA6"] + list(s.get("hashtags", [])))
-    steps = []
-    if yt_id:
-        steps.append(f"YouTube {handle}: already posted ✅ https://youtube.com/shorts/{yt_id}")
+    if yt_id == "QUEUED":
+        lines = [f"Sent to YouTube {handle} through Make. It appears on the channel within a few minutes."]
+    elif yt_id:
+        lines = [f"Posted on YouTube {handle} automatically: https://youtube.com/shorts/{yt_id}"]
     else:
-        steps.append(f"YouTube Shorts {handle}: upload this video, paste the TITLE and DESCRIPTION below")
-    steps.append(f"TikTok: post this video. Caption: the TITLE + {tags}")
-    steps.append(f"Instagram Reels: post this video. Caption: the TITLE + {tags}")
-    steps.append("X (Twitter): post this video with the TITLE")
+        lines = [f"Auto-post did not happen. Upload this video to YouTube {handle} "
+                 "and paste the TITLE and DESCRIPTION below."]
     if s.get("campaign"):
-        steps.append(f"Content Rewards: submit the YouTube and TikTok links to the {s['name']} GTA 6 "
-                     "campaign within 30 minutes of posting")
+        lines.append(f"TO DO: submit the YouTube link to the {s['name']} GTA 6 campaign on "
+                     "Content Rewards within 30 minutes.")
     else:
-        steps.append("No campaign for this streamer: nothing to submit. Delete the posts if the streamer ever asks.")
-    return "WHAT TO DO WITH THIS CLIP:\n" + "\n".join(f"{i}. {t}" for i, t in enumerate(steps, 1))
+        lines.append("Nothing else to do.")
+    return "\n".join(lines)
 
 
 def twitch_candidates(streamers, cfg, state, usable, since, now, n):
@@ -225,17 +223,19 @@ def cmd_run(args):
                         print(f"  light copy for Make: {size / 1e6:.1f} MB")
                     yt_id = make_upload(small, title, desc, tags, pub.get("privacy", "public"))
                 if yt_id:
-                    print(f"  uploaded: https://youtube.com/shorts/{yt_id}")
+                    print(f"  uploaded: {yt_id if yt_id == 'QUEUED' else 'https://youtube.com/shorts/' + yt_id}")
             if pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
                 from .publish import telegram_send, telegram_text
-                where = "YouTube" if "_yt" in c else "Twitch"
-                telegram_send(out_path, f"{title}\n\n{s['name']} | from {where}")
-                telegram_text(checklist(s, cfg, yt_id) + f"\n\nTITLE:\n{title}\n\nDESCRIPTION:\n{desc}")
+                if yt_id:
+                    telegram_text(f"{title}\n\n" + checklist(s, cfg, yt_id))
+                else:  # fallback: send the file so you can upload it yourself
+                    telegram_send(out_path, title)
+                    telegram_text(checklist(s, cfg, yt_id) + f"\n\nTITLE:\n{title}\n\nDESCRIPTION:\n{desc}")
             if not args.dry_run:
                 st.record(state, c, s["login"], hook, title, yt_id)
                 st.save(state)
             rows.append(f"| {s['name']} | {title} | {c['view_count']} | {dur:.0f}s | "
-                        f"{'https://youtube.com/shorts/' + yt_id if yt_id else 'rendered'} |")
+                        f"{('https://youtube.com/shorts/' + yt_id) if yt_id and yt_id != 'QUEUED' else (yt_id or 'rendered')} |")
         except Exception:  # noqa: BLE001 - one bad clip must not stop the rest
             traceback.print_exc()
             rows.append(f"| {s['name']} | FAILED: {c['url']} | {c['view_count']} | - | - |")

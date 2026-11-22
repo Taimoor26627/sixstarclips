@@ -5,7 +5,7 @@ Every few hours this bot:
 1. Finds the most-viewed new GTA 6 Twitch clips from the streamers you have permission to clip (free Twitch API)
 2. Downloads them, writes word-by-word captions (faster-whisper) and a hook title
 3. Renders a 1080x1920 Short: blurred background, hook at the top, credit to the streamer at the bottom
-4. Sends it to your phone on Telegram, ready to post to YouTube, TikTok, Instagram and X. Once YouTube approves the API audit, it uploads to YouTube by itself too.
+4. Uploads it to your YouTube channel automatically (through Make), then pings you on Telegram with the link and any campaign link to submit.
 5. Remembers what it posted so nothing is posted twice. Writes a daily report of every streamer's live and last-stream numbers to `reports/streamers.md`.
 
 It runs free on GitHub Actions: this repo must be **public**, and your keys stay hidden in GitHub Secrets.
@@ -29,7 +29,7 @@ The bot works **without** Twitch keys: it reads each streamer's public "top clip
 2. Click **Register Your Application**. Name: anything. OAuth Redirect URL: `http://localhost`. Category: *Application Integration*. Client type: *Confidential*.
 3. Open the app, copy the **Client ID**, then click **New Secret** and copy the **Client Secret**.
 
-### 4. Telegram bot (clips delivered to your phone)
+### 4. Telegram bot (alerts with each posted link)
 1. In Telegram, message **@BotFather** and send `/newbot`. Follow the prompts and copy the **bot token**.
 2. Send any message to your new bot.
 3. Open `https://api.telegram.org/bot<TOKEN>/getUpdates` in a browser and copy the number after `"chat":{"id":`. That's your **chat ID**.

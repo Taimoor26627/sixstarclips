@@ -94,6 +94,7 @@ def make_upload(path, title, description, tags, privacy="public"):
     text = r.text.strip()
     try:
         data = r.json()
-        return data.get("video_id") or data.get("id") or text
+        return data.get("video_id") or data.get("id") or "QUEUED"
     except ValueError:
-        return text if text and text.lower() != "accepted" else None
+        # "Accepted" = Make queued it and will upload it in a moment.
+        return "QUEUED" if not text or text.lower() == "accepted" else text
