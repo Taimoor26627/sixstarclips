@@ -2,8 +2,12 @@ name: Clip and post
 
 on:
   schedule:
-    # 6 runs a day (UTC). Each run posts `posts_per_run` clips from config.yaml.
-    - cron: "7 1,5,9,13,17,21 * * *"
+    # Every 30 minutes (48 runs a day). Each run posts `posts_per_run` clips from config.yaml.
+    - cron: "4,34 * * * *"
+  push:
+    # Also run right away whenever the settings or this schedule change.
+    branches: [main]
+    paths: ["config.yaml", ".github/workflows/clip-and-post.yml"]
   workflow_dispatch:
     inputs:
       max_posts:

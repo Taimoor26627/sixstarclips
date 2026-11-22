@@ -48,7 +48,7 @@ Repo > **Settings > Secrets and variables > Actions > New repository secret**:
 - Go to the **Actions** tab and enable workflows if asked.
 - Open **Clip and post** > **Run workflow**. Tick *dry run* for a test: the rendered clips appear under the run's **Artifacts**.
 - Run it again without *dry run* and the clips arrive on Telegram.
-- After that it runs by itself 6 times a day, plus the **Daily streamer report**.
+- After that it runs by itself every 30 minutes, plus the **Daily streamer report**.
 
 ---
 
@@ -84,7 +84,7 @@ YouTube locks anything uploaded through an unaudited API project to **private**,
 On a computer with Claude Code installed, run `claude setup-token` and save the token as the `CLAUDE_CODE_OAUTH_TOKEN` secret. The bot will then ask Claude (on your own plan) for a hook and title from each clip's transcript. Without it, it uses the viewer-written Twitch clip title or a rotating set of templates.
 
 ## Everyday changes (edit `config.yaml` on GitHub)
-- **More or fewer posts:** `posts_per_run` (6 runs a day), or change the `cron` times in `.github/workflows/clip-and-post.yml`.
+- **More or fewer posts:** `posts_per_run` (48 runs a day), or change the `cron` times in `.github/workflows/clip-and-post.yml`.
 - **Add a streamer:** add an entry with their Twitch login. Set `enabled: true` only with permission.
 - **Facecam-on-top layout:** add `facecam: {x, y, w, h}`, the box around their camera in the 1920x1080 stream.
 - **Test a layout locally:** `python -m clipper render-test video.mp4 "Hook text" --facecam 1460,40,420,300`

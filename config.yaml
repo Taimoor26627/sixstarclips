@@ -11,7 +11,7 @@ selection:
   lookback_hours: 36               # only clips made in the last 36 hours
   min_views: 200                   # skip Twitch clips with fewer views
   min_duration: 8                  # seconds
-  max_per_streamer_per_day: 3      # spread posts across streamers
+  max_per_streamer_per_day: 6      # spread posts across streamers (48 posts/day needs room)
   posts_per_run: 1                 # each scheduled run posts this many
   youtube_lookback_hours: 72       # YouTube streams: use streams from the last 3 days
   youtube_peak_weight: 40000       # how strongly YouTube "most replayed" peaks compete with Twitch clips
