@@ -23,7 +23,8 @@ It runs free on GitHub Actions: this repo must be **public**, and your keys stay
 - Read each campaign's rules: minimum views, required hashtags, ad disclosure, and submitting within 30 minutes of posting.
 - Don't turn on any streamer marked `enabled: false` until you have their written OK.
 
-### 3. Twitch API keys
+### 3. Twitch API keys (optional)
+The bot works **without** Twitch keys: it reads each streamer's public "top clips" page and checks each clip's game one by one. Keys make it faster and filter by game more reliably, so add them later if you can.
 1. Sign in at dev.twitch.tv/console (your Twitch account needs two-factor auth turned on).
 2. Click **Register Your Application**. Name: anything. OAuth Redirect URL: `http://localhost`. Category: *Application Integration*. Client type: *Confidential*.
 3. Open the app, copy the **Client ID**, then click **New Secret** and copy the **Client Secret**.
@@ -38,8 +39,8 @@ Repo > **Settings > Secrets and variables > Actions > New repository secret**:
 
 | Secret | Value |
 | --- | --- |
-| `TWITCH_CLIENT_ID` | from step 3 |
-| `TWITCH_CLIENT_SECRET` | from step 3 |
+| `TWITCH_CLIENT_ID` | from step 3 (optional) |
+| `TWITCH_CLIENT_SECRET` | from step 3 (optional) |
 | `TELEGRAM_BOT_TOKEN` | from step 4 |
 | `TELEGRAM_CHAT_ID` | from step 4 |
 

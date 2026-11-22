@@ -64,43 +64,66 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
 
 def cmd_run(args):
     cfg = load_cfg(args.config)
-    from .twitch import Twitch
-
-    tw = Twitch(env("TWITCH_CLIENT_ID"), env("TWITCH_CLIENT_SECRET"))
     state = st.load()
     streamers = [s for s in cfg["streamers"] if s.get("enabled")]
-    users = tw.users(s["login"] for s in streamers)
-    game = tw.game_id(cfg["game_name"])
-    if not game:
-        print(f"WARNING: Twitch category '{cfg['game_name']}' not found; clips are not filtered by game.")
-
     sel = cfg["selection"]
     now = select.now_utc()
-    started = (now - timedelta(hours=sel["lookback_hours"])).strftime("%Y-%m-%dT%H:%M:%SZ")
-    ended = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    n = args.max_posts or sel.get("posts_per_run", 1)
+    since = now - timedelta(hours=sel["lookback_hours"])
+
+    def usable(c):
+        return (c["id"] not in state["posted"]
+                and c["view_count"] >= sel["min_views"]
+                and c["duration"] >= sel["min_duration"]
+                and select.parse_time(c["created_at"]) >= since
+                and not select.has_spoiler(c["title"], cfg.get("spoiler_words", [])))
 
     candidates = []
-    for s in streamers:
-        u = users.get(s["login"].lower())
-        if not u:
-            print(f"Skipping {s['login']}: Twitch user not found")
-            continue
-        if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
-            continue
-        for c in tw.clips(u["id"], started, ended):
-            if game and c.get("game_id") != game:
+    if os.environ.get("TWITCH_CLIENT_ID") and os.environ.get("TWITCH_CLIENT_SECRET"):
+        from .twitch import Twitch
+
+        tw = Twitch(os.environ["TWITCH_CLIENT_ID"], os.environ["TWITCH_CLIENT_SECRET"])
+        users = tw.users(s["login"] for s in streamers)
+        game = tw.game_id(cfg["game_name"])
+        if not game:
+            print(f"WARNING: Twitch category '{cfg['game_name']}' not found; clips are not filtered by game.")
+        started, ended = since.strftime("%Y-%m-%dT%H:%M:%SZ"), now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        for s in streamers:
+            u = users.get(s["login"].lower())
+            if not u:
+                print(f"Skipping {s['login']}: Twitch user not found")
                 continue
-            if c["id"] in state["posted"] or c["view_count"] < sel["min_views"]:
+            if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
                 continue
-            if c["duration"] < sel["min_duration"]:
+            for c in tw.clips(u["id"], started, ended):
+                if (not game or c.get("game_id") == game) and usable(c):
+                    c["_streamer"] = s
+                    candidates.append(c)
+    else:
+        from . import keyless
+
+        print("No Twitch keys set: reading each streamer's public clips page instead.")
+        for s in streamers:
+            if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
                 continue
-            if select.has_spoiler(c["title"], cfg.get("spoiler_words", [])):
-                continue
-            c["_streamer"] = s
-            candidates.append(c)
+            for c in keyless.list_clips(s["login"]):
+                if usable(c):
+                    c["_streamer"] = s
+                    candidates.append(c)
+        # The clips page doesn't say which game a clip is from, so check the best few one by one.
+        ranked = sorted(candidates, key=lambda c: select.score(c, now), reverse=True)
+        checked, want = [], max(n * 4, 8)
+        for c in ranked:
+            if len(checked) >= want:
+                break
+            g = keyless.clip_game(c["url"])
+            if g and g.strip().lower() == cfg["game_name"].lower():
+                checked.append(c)
+            else:
+                print(f"  skip (game: {g}): {c['title'][:60]}")
+        candidates = checked
     print(f"{len(candidates)} candidate clips from {len(streamers)} streamers")
 
-    n = args.max_posts or sel.get("posts_per_run", 1)
     chosen = select.pick(candidates, n, now)
     if not chosen:
         summary("No new clips met the rules this run.")
@@ -162,6 +185,8 @@ def cmd_run(args):
 
 def cmd_report(args):
     cfg = load_cfg(args.config)
+    if not (os.environ.get("TWITCH_CLIENT_ID") and os.environ.get("TWITCH_CLIENT_SECRET")):
+        return cmd_report_keyless(cfg)
     from .twitch import Twitch
 
     tw = Twitch(env("TWITCH_CLIENT_ID"), env("TWITCH_CLIENT_SECRET"))
@@ -185,6 +210,29 @@ def cmd_report(args):
             f"{l['game_name'] if l else ''} | {vod['created_at'][:10] if vod else ''} | "
             f"{vod['view_count'] if vod else ''} | {vod['duration'] if vod else ''} | {s.get('enabled')} |"
         )
+    os.makedirs("reports", exist_ok=True)
+    with open(os.path.join("reports", "streamers.md"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    summary("\n".join(lines))
+
+
+def cmd_report_keyless(cfg):
+    from . import keyless
+
+    lines = [
+        f"# Streamer numbers ({select.now_utc():%Y-%m-%d %H:%M} UTC, no-key mode)",
+        "",
+        "| Streamer | Last broadcast | Views | Length (h) | Enabled |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for s in cfg["streamers"]:
+        v = keyless.last_vod(s["login"])
+        if not v:
+            lines.append(f"| {s['name']} | not found | | | {s.get('enabled')} |")
+            continue
+        title = (v.get("title") or "").replace("|", "/")[:60]
+        hours = f"{(v.get('duration') or 0) / 3600:.1f}"
+        lines.append(f"| {s['name']} | {title} | {v.get('view_count') or ''} | {hours} | {s.get('enabled')} |")
     os.makedirs("reports", exist_ok=True)
     with open(os.path.join("reports", "streamers.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
