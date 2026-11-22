@@ -28,6 +28,10 @@ def looks_like_default_title(raw, cleaned):
     """Twitch copies the stream title when the clipper doesn't rename a clip."""
     if len(cleaned) < 4 or len(cleaned) > 70:
         return True
+    words = re.findall(r"[A-Za-z']+", cleaned)
+    real = [w for w in words if len(w) >= 2 and not re.search(r"(.)\1{3,}", w, re.I)]
+    if len(real) < 3:          # junk like "Sssssssss", "W", "LMAOOOO", "omg"
+        return True
     if raw.count("|") >= 1 or raw.count("!") >= 3:
         return True
     if re.search(r"\b(day|hour|marathon|live|stream|subathon|sub goal|#\d+)\b", cleaned, re.I):
