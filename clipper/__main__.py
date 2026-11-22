@@ -63,6 +63,91 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
     return dur, " ".join(w["word"] for w in words)
 
 
+def _tz(cfg):
+    from datetime import timezone as _t
+    return _t(timedelta(hours=cfg.get("schedule", {}).get("utc_offset_hours", 5)))
+
+
+def next_slots(cfg, state, count):
+    """The next free go-live times (UTC ISO strings), at least 30 min from now."""
+    from datetime import datetime
+    tz = _tz(cfg)
+    now_local = datetime.now(tz)
+    taken = st.taken_slots(state)
+    out, day = [], 0
+    while len(out) < count and day < 7:
+        date = (now_local + timedelta(days=day)).date()
+        for hhmm in sorted(cfg["schedule"]["slots"]):
+            h, m = (int(x) for x in hhmm.split(":"))
+            t = datetime(date.year, date.month, date.day, h, m, tzinfo=tz)
+            iso = t.astimezone(select.now_utc().tzinfo).strftime("%Y-%m-%dT%H:%M:%SZ")
+            if t > now_local + timedelta(minutes=30) and iso not in taken and iso not in out:
+                out.append(iso)
+        day += 1
+    return sorted(out)[:count]
+
+
+def immediate_time():
+    """A time just in the past: YouTube publishes it straight away."""
+    return (select.now_utc() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def local_label(iso, cfg):
+    t = select.parse_time(iso).astimezone(_tz(cfg))
+    return t.strftime("%a %d %b, %I:%M %p").replace(" 0", " ")
+
+
+def send_plan(done, cfg):
+    """One Telegram message: what goes live when, and what you need to do."""
+    from .publish import telegram_send, telegram_text
+
+    handle = cfg["channel"]["handle"]
+    lines = [f"{len(done)} Shorts made and scheduled on YouTube {handle}:", ""]
+    todo = []
+    for i, d in enumerate(sorted(done, key=lambda x: x["publish_at"]), 1):
+        when = local_label(d["publish_at"], cfg)
+        ok = d["yt_id"] and d["yt_id"] != "QUEUED"
+        link = f"https://youtube.com/shorts/{d['yt_id']}" if ok else "NOT UPLOADED - file sent below"
+        lines.append(f"{i}. {when} - {d['title']}\n   {link}")
+        if d["s"].get("campaign"):
+            lines.append(f"   SUBMIT to the {d['s']['name']} GTA 6 campaign on Content Rewards at {when} "
+                         "(within 30 min of going live)")
+            todo.append(f"{when}: {d['s']['name']} campaign")
+        if not ok:
+            telegram_send(d["out"], d["title"])
+            telegram_text(f"Upload manually:\nTITLE:\n{d['title']}\n\nDESCRIPTION:\n{d['desc']}")
+    lines += ["", "YOUR TO-DO: " + ("; ".join(todo) if todo else "nothing, all automatic.")]
+    telegram_text("\n".join(lines))
+
+
+def cmd_alerts(args):
+    """Ping Telegram when a scheduled Short has just gone live."""
+    cfg = load_cfg(args.config)
+    state = st.load()
+    now = select.now_utc()
+    changed = False
+    for v in state["posted"].values():
+        pa = v.get("publish_at")
+        if not pa or v.get("alerted") or not v.get("youtube_id") or v["youtube_id"] == "QUEUED":
+            continue
+        t = select.parse_time(pa)
+        if t <= now <= t + timedelta(hours=6):
+            msg = f"LIVE NOW: {v['title']}\nhttps://youtube.com/shorts/{v['youtube_id']}"
+            if v.get("campaign"):
+                msg += "\n\nSubmit this link to the campaign on Content Rewards now (within 30 min)."
+            if os.environ.get("TELEGRAM_BOT_TOKEN"):
+                from .publish import telegram_text
+                telegram_text(msg)
+            print(msg)
+            v["alerted"] = True
+            changed = True
+        elif now > t + timedelta(hours=6):
+            v["alerted"] = True
+            changed = True
+    if changed:
+        st.save(state)
+
+
 def checklist(s, cfg, yt_id):
     """What (if anything) you need to do for this clip. YouTube only."""
     handle = cfg["channel"]["handle"]
@@ -186,7 +271,8 @@ def cmd_run(args):
     streamers = [s for s in cfg["streamers"] if s.get("enabled")]
     sel = cfg["selection"]
     now = select.now_utc()
-    n = args.max_posts or sel.get("posts_per_run", 1)
+    n = args.max_posts or (cfg.get("schedule", {}).get("per_day", 6) if args.batch
+                           else sel.get("posts_per_run", 1))
     since = now - timedelta(hours=sel["lookback_hours"])
 
     def usable(c):
@@ -214,7 +300,8 @@ def cmd_run(args):
 
     os.makedirs(OUT_DIR, exist_ok=True)
     pub = cfg["publish"]
-    rows = []
+    rows, done = [], []
+    slots = next_slots(cfg, state, len(chosen)) if args.batch else []
     for c in chosen:
         s = c["_streamer"]
         lang = s.get("language", "en")
@@ -243,12 +330,13 @@ def cmd_run(args):
                                facecam=s.get("facecam"), disclosure=disclosure, language=lang)
             desc, tags = select.describe(c, s, cfg)
 
+            publish_at = slots.pop(0) if slots else immediate_time()
             yt_id = None
             if not args.dry_run:
                 if pub.get("youtube"):
                     from .publish import youtube_upload
-                    yt_id = youtube_upload(out_path, title, desc, tags, pub.get("privacy", "public"),
-                                           paid=bool(s.get("campaign")))
+                    yt_id = youtube_upload(out_path, title, desc, tags, "private",
+                                           paid=bool(s.get("campaign")), publish_at=publish_at)
                 elif pub.get("make") and os.environ.get("MAKE_WEBHOOK_URL"):
                     from .publish import make_upload
                     small = out_path
@@ -256,28 +344,23 @@ def cmd_run(args):
                         small = out_path.replace(".mp4", "_small.mp4")
                         size = render.export_small(out_path, small)
                         print(f"  light copy for Make: {size / 1e6:.1f} MB")
-                    yt_id = make_upload(small, title, desc, tags, pub.get("privacy", "public"))
-                if yt_id:
-                    print(f"  uploaded: {yt_id if yt_id == 'QUEUED' else 'https://youtube.com/shorts/' + yt_id}")
-            if pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
-                from .publish import telegram_send, telegram_text
-                if yt_id and yt_id != "QUEUED":
-                    telegram_text(f"{title}\n\n" + checklist(s, cfg, yt_id))
-                else:  # fallback: send the file so you can upload it yourself
-                    telegram_send(out_path, title)
-                    telegram_text(checklist(s, cfg, yt_id) + f"\n\nTITLE:\n{title}\n\nDESCRIPTION:\n{desc}")
-            if not args.dry_run:
-                st.record(state, c, s["login"], hook, title, yt_id)
+                    yt_id = make_upload(small, title, desc, tags, publish_at)
+                print(f"  scheduled for {local_label(publish_at, cfg)}: {yt_id}")
+                st.record(state, c, s["login"], hook, title, yt_id, publish_at, bool(s.get("campaign")))
                 st.save(state)
-            rows.append(f"| {s['name']} | {title} | {c['view_count']} | {dur:.0f}s | "
+            done.append({"s": s, "title": title, "desc": desc, "yt_id": yt_id, "publish_at": publish_at,
+                         "out": out_path})
+            rows.append(f"| {local_label(publish_at, cfg)} | {s['name']} | {title} | {dur:.0f}s | "
                         f"{('https://youtube.com/shorts/' + yt_id) if yt_id and yt_id != 'QUEUED' else (yt_id or 'rendered')} |")
         except Exception:  # noqa: BLE001 - one bad clip must not stop the rest
             traceback.print_exc()
-            rows.append(f"| {s['name']} | FAILED: {c['url']} | {c['view_count']} | - | - |")
+            rows.append(f"| - | {s['name']} | FAILED: {c['url']} | - | - |")
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
 
-    summary("| Streamer | Title | Score | Length | Result |\n| --- | --- | --- | --- | --- |\n"
+    if done and pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
+        send_plan(done, cfg)
+    summary("| Goes live | Streamer | Title | Length | Video |\n| --- | --- | --- | --- | --- |\n"
             + "\n".join(rows))
 
 
@@ -378,13 +461,15 @@ def main():
     r = sub.add_parser("run")
     r.add_argument("--max-posts", type=int, default=0)
     r.add_argument("--dry-run", action="store_true")
+    r.add_argument("--batch", action="store_true", help="make the whole day's clips and schedule them")
     sub.add_parser("report")
+    sub.add_parser("alerts")
     t = sub.add_parser("render-test")
     t.add_argument("video")
     t.add_argument("hook")
     t.add_argument("--facecam", help="x,y,w,h in 1920x1080 source")
     args = p.parse_args()
-    {"run": cmd_run, "report": cmd_report, "render-test": cmd_render_test}[args.cmd](args)
+    {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "render-test": cmd_render_test}[args.cmd](args)
 
 
 if __name__ == "__main__":

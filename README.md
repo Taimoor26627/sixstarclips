@@ -1,14 +1,14 @@
 # Six Star Clips: GTA 6 streamer clip bot
 
-Every few hours this bot:
+**Run it once a day:** GitHub → **Actions** → **Make today's clips** → **Run workflow**.
 
-1. Finds the most-viewed new GTA 6 Twitch clips from the streamers you have permission to clip (free Twitch API)
-2. Downloads them, writes word-by-word captions (faster-whisper) and a hook title
-3. Renders a 1080x1920 Short: blurred background, hook at the top, credit to the streamer at the bottom
-4. Uploads it to your YouTube channel automatically (through Make), then pings you on Telegram with the link and any campaign link to submit.
-5. Remembers what it posted so nothing is posted twice. Writes a daily report of every streamer's live and last-stream numbers to `reports/streamers.md`.
+That one run:
+1. Finds the best new GTA 6 moments from the streamers in `config.yaml` (Twitch clips plus YouTube "most replayed" peaks)
+2. Turns each into a captioned 1080×1920 Short with a hook and streamer credit
+3. Uploads all of them to YouTube, each **scheduled** at the next free go-live time (`schedule.slots`: 1, 5, 9 AM and 1, 5, 9 PM Pakistan time)
+4. Sends you **one Telegram message**: what goes live when, with links, and which ones need a Content Rewards submission
 
-It runs free on GitHub Actions: this repo must be **public**, and your keys stay hidden in GitHub Secrets.
+A few minutes after each go-live time you also get a short "LIVE NOW" ping. Run it again the same day and it fills the next free slots.
 
 ---
 
@@ -48,7 +48,7 @@ Repo > **Settings > Secrets and variables > Actions > New repository secret**:
 - Go to the **Actions** tab and enable workflows if asked.
 - Open **Clip and post** > **Run workflow**. Tick *dry run* for a test: the rendered clips appear under the run's **Artifacts**.
 - Run it again without *dry run* and the clips arrive on Telegram.
-- After that it runs by itself every 4 hours (6 a day), plus the **Daily streamer report**.
+- After that, run **Make today's clips** once a day. The **Daily streamer report** runs by itself.
 
 ---
 
@@ -84,7 +84,7 @@ YouTube locks anything uploaded through an unaudited API project to **private**,
 On a computer with Claude Code installed, run `claude setup-token` and save the token as the `CLAUDE_CODE_OAUTH_TOKEN` secret. The bot will then ask Claude (on your own plan) for a hook and title from each clip's transcript. Without it, it uses the viewer-written Twitch clip title or a rotating set of templates.
 
 ## Everyday changes (edit `config.yaml` on GitHub)
-- **More or fewer posts:** `posts_per_run` (6 runs a day), or change the `cron` times in `.github/workflows/clip-and-post.yml`.
+- **More or fewer posts:** `schedule.per_day` and `schedule.slots` in `config.yaml` (or the count box when you run it).
 - **Add a streamer:** add an entry with their Twitch login. Set `enabled: true` only with permission.
 - **Facecam-on-top layout:** add `facecam: {x, y, w, h}`, the box around their camera in the 1920x1080 stream.
 - **Test a layout locally:** `python -m clipper render-test video.mp4 "Hook text" --facecam 1460,40,420,300`

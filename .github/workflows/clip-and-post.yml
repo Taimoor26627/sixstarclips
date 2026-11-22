@@ -1,23 +1,21 @@
-name: Clip and post
+name: Make today's clips
 
 on:
-  schedule:
-    # Every 4 hours = 6 runs a day (UTC 00:04, 04:04, 08:04, 12:04, 16:04, 20:04) ok.
-    # Each run posts `posts_per_run` clips from config.yaml.
-    - cron: "4 0,4,8,12,16,20 * * *"
-  push:
-    # Also run right away whenever the settings or this schedule change.
-    branches: [main]
-    paths: ["config.yaml", ".github/workflows/clip-and-post.yml"]
+  # Run this ONCE a day (Actions > Make today's clips > Run workflow). It makes the
+  # day's Shorts, schedules each on YouTube at the go-live times in config.yaml,
+  # and sends you one Telegram message with the plan.
   workflow_dispatch:
     inputs:
-      max_posts:
-        description: "How many clips to make this run"
-        default: "1"
+      count:
+        description: "How many Shorts to make and schedule"
+        default: "6"
       dry_run:
         description: "Render only (no YouTube, no Telegram)"
         type: boolean
         default: false
+  schedule:
+    # Only sends "LIVE NOW" alerts a few minutes after each go-live time. It never posts.
+    - cron: "4 0,4,8,12,16,20 * * *"
 
 permissions:
   contents: write
@@ -28,6 +26,7 @@ concurrency:
 
 jobs:
   clip:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -68,7 +67,7 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
         run: |
-          python -m clipper run --max-posts "${{ github.event.inputs.max_posts || '0' }}" \
+          python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
             ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
 
       - name: Keep the rendered clips for 3 days
@@ -87,3 +86,25 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add state || true
           git diff --cached --quiet || (git commit -m "Update posted clips" && git pull --rebase && git push)
+
+  alerts:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests PyYAML
+      - name: Send "live now" alerts
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m clipper alerts
+      - name: Save alert status
+        run: |
+          git config user.name "clip-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state
+          git diff --cached --quiet || (git commit -m "Live alerts sent" && git pull --rebase && git push)

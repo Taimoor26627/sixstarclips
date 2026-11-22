@@ -4,7 +4,7 @@ import os
 import requests
 
 
-def youtube_upload(path, title, description, tags, privacy="public", paid=False):
+def youtube_upload(path, title, description, tags, privacy="public", paid=False, publish_at=None):
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     from googleapiclient.errors import HttpError
@@ -28,6 +28,8 @@ def youtube_upload(path, title, description, tags, privacy="public", paid=False)
         },
         "status": {"privacyStatus": privacy, "selfDeclaredMadeForKids": False},
     }
+    if publish_at:
+        body["status"].update({"privacyStatus": "private", "publishAt": publish_at})
     parts = ["snippet", "status"]
     if paid:
         body["paidProductPlacementDetails"] = {"hasPaidProductPlacement": True}
@@ -78,7 +80,7 @@ def telegram_text(text):
                   timeout=60).raise_for_status()
 
 
-def make_upload(path, title, description, tags, privacy="public"):
+def make_upload(path, title, description, tags, publish_at):
     """Send the clip to your Make scenario, which uploads it to YouTube.
     Make's YouTube app is already verified, so uploads can be public right away."""
     url = os.environ["MAKE_WEBHOOK_URL"]
@@ -86,7 +88,7 @@ def make_upload(path, title, description, tags, privacy="public"):
         r = requests.post(
             url,
             data={"title": title[:100], "description": description[:4900],
-                  "tags": ",".join(tags), "privacy": privacy},
+                  "tags": ",".join(tags), "publish_at": publish_at},
             files={"video": (os.path.basename(path), f, "video/mp4")},
             timeout=600,
         )

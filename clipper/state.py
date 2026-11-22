@@ -31,7 +31,11 @@ def recent_openers(state, days=7):
     return {v.get("hook", "").lower() for v in state["posted"].values() if v.get("at", "") >= since}
 
 
-def record(state, clip, login, hook, title, youtube_id=None):
+def taken_slots(state):
+    return {v["publish_at"] for v in state["posted"].values() if v.get("publish_at")}
+
+
+def record(state, clip, login, hook, title, youtube_id=None, publish_at=None, campaign=False):
     state["posted"][clip["id"]] = {
         "at": datetime.now(timezone.utc).isoformat(),
         "login": login,
@@ -40,4 +44,7 @@ def record(state, clip, login, hook, title, youtube_id=None):
         "title": title,
         "youtube_id": youtube_id,
         "source": clip["url"],
+        "publish_at": publish_at,
+        "campaign": campaign,
+        "alerted": False,
     }

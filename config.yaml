@@ -16,6 +16,12 @@ selection:
   youtube_lookback_hours: 72       # YouTube streams: use streams from the last 3 days
   youtube_peak_weight: 40000       # how strongly YouTube "most replayed" peaks compete with Twitch clips
 
+schedule:
+  # One run makes the whole day's clips and schedules them on YouTube at these times.
+  per_day: 6
+  utc_offset_hours: 5              # Pakistan time
+  slots: ["01:00", "05:00", "09:00", "13:00", "17:00", "21:00"]   # go-live times (your time)
+
 publish:
   # YouTube auto-upload. Keep false until YouTube's API audit is approved:
   # before that, API uploads are locked private forever and can't be fixed.
@@ -54,10 +60,10 @@ hooks:
     - "the moment {name} gave up"
 
 # Clips you want posted next, in order (Twitch clip links). Already-posted ones are skipped.
-queue:
-  - login: kaicenat
-    url: "https://www.twitch.tv/kaicenat/clip/LaconicConsiderateCaterpillarKippa-gK9T9i4PZk82S-SA"
-    title: "Kai got motion"
+queue: []
+#  - login: kaicenat
+#    url: "https://www.twitch.tv/<streamer>/clip/<clip-id>"
+#    title: "Optional title"
 
 # Words that suggest a story spoiler. Rockstar takes spoilers down, so skip.
 spoiler_words: [ending, "final mission", credits, spoiler, "last mission", "true ending", "dies", "death of", "plot twist"]
