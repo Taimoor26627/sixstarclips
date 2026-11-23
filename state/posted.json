@@ -49,7 +49,7 @@
    "source": "https://www.twitch.tv/lacy/clip/PiercingMotionlessGnatPeanutButterJellyTime-Lgaxg8ItCK9yzJL7",
    "publish_at": "2026-11-23T04:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "1749979550": {
    "at": "2026-11-22T20:58:07.861431+00:00",
@@ -61,7 +61,7 @@
    "source": "https://www.twitch.tv/clix/clip/AmusedSpikyMeerkatBigBrother-7FMWQabNRJ3gubYw",
    "publish_at": "2026-11-23T08:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "1898650756": {
    "at": "2026-11-22T20:59:42.711766+00:00",
@@ -73,7 +73,7 @@
    "source": "https://www.twitch.tv/yourragegaming/clip/JazzyRelatedPoxStrawBeary-PnTV6_GAv5gGNkci",
    "publish_at": "2026-11-23T12:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "4276206929": {
    "at": "2026-11-22T21:00:42.681185+00:00",
