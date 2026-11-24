@@ -44,9 +44,22 @@ def has_spoiler(text, words):
     return any(w.lower() in low for w in words)
 
 
+HALF_LIFE_H = 168.0   # a week-old clip counts half; set from config "selection.half_life_hours"
+
+
 def score(clip, now):
+    """Proven popularity (clip views), nudged by what each streamer's audience watches
+    and by how our own Shorts of that streamer did (state/learn.json)."""
+    from . import research
+
     age_h = max(0.0, (now - parse_time(clip["created_at"])).total_seconds() / 3600)
-    return clip["view_count"] * (0.5 ** (age_h / 24.0))
+    login = clip.get("_streamer", {}).get("login", "")
+    w = research.weight(login) if login else 1.0
+    kws, _ = research.audience(login) if login else ([], [])
+    title = (clip.get("title") or "").lower()
+    if kws and any(k in title for k in kws[:8]):
+        w *= 1.3   # the clip is about something this audience already watches a lot
+    return clip["view_count"] * w * (0.5 ** (age_h / HALF_LIFE_H))
 
 
 def pick(candidates, n, now):
@@ -67,7 +80,7 @@ def pick(candidates, n, now):
     return chosen
 
 
-def _claude_hook(name, clip_title, transcript):
+def _claude_hook(name, clip_title, transcript, login=""):
     """Optional: ask Claude Code (on your own plan) for a hook. Returns dict or None."""
     if not shutil.which("claude"):
         return None
@@ -77,9 +90,12 @@ def _claude_hook(name, clip_title, transcript):
         "You write hooks for a YouTube Shorts channel that posts credited GTA 6 stream clips.\n"
         f"Streamer: {name}\nTwitch clip title (written by a viewer): {clip_title}\n"
         f"Transcript: {transcript[:1500]}\n\n"
+        + _audience_block(login) +
         "Return ONLY JSON: {\"hook\": \"on-screen text, max 7 words, no emoji\", "
         "\"title\": \"YouTube title under 80 chars that names the streamer and says what happened\"}. "
-        "No story spoilers, no clickbait lies, no 'official'."
+        "The hook must make a viewer stop scrolling in the first second: a bold claim, a question, "
+        "or the stakes of the moment (e.g. 'He did NOT expect this cop'). Match the tone of what this "
+        "streamer's audience already watches. No story spoilers, no clickbait lies, no 'official'."
     )
     try:
         out = subprocess.run(
@@ -95,13 +111,24 @@ def _claude_hook(name, clip_title, transcript):
     return None
 
 
+def _audience_block(login):
+    from . import research
+
+    kws, titles = research.audience(login)
+    if not titles:
+        return ""
+    return ("Most-viewed GTA 6 Shorts about this streamer right now (learn from what their audience "
+            "likes; do not copy):\n" + "\n".join(f"- {t}" for t in titles[:6]) + "\n"
+            + (f"Topics that do well: {', '.join(kws[:8])}\n" if kws else "") + "\n")
+
+
 def make_hook(clip, streamer, cfg, recent_openers, transcript=""):
     name = streamer["name"]
     raw = clip.get("title", "")
     cleaned = clean_title(raw)
 
     if cfg.get("hooks", {}).get("use_claude"):
-        got = _claude_hook(name, raw, transcript)
+        got = _claude_hook(name, raw, transcript, streamer.get("login", ""))
         if got and got["hook"].lower() not in recent_openers:
             return got["hook"], got["title"]
 
@@ -150,7 +177,11 @@ def describe(clip, streamer, cfg):
         "",
         " ".join(dict.fromkeys(tags)),
     ]
+    from . import research
+
+    kws, _ = research.audience(streamer.get("login", ""))
     yt_tags = ["GTA 6", "GTA VI", name, f"{name} GTA 6", "GTA 6 funny moments", "streamer clips"]
+    yt_tags += [f"{name} {k}" for k in kws[:4]]
     return "\n".join(lines), yt_tags
 
 

@@ -1,6 +1,7 @@
 """Entry point.
 
   python -m clipper run [--max-posts N] [--dry-run]   find, render and publish clips
+  python -m clipper learn                             read our views + research audiences
   python -m clipper report                            latest stream numbers -> reports/streamers.md
   python -m clipper render-test VIDEO "Hook text"     render a local file (no Twitch, no upload)
 """
@@ -148,9 +149,43 @@ def cmd_alerts(args):
         st.save(state)
 
 
+def cmd_learn(args, force=False):
+    """Read our Shorts' views + research each streamer's audience, then re-weight selection."""
+    from . import research
+
+    cfg = load_cfg(args.config)
+    rc = cfg.get("research", {})
+    if not os.environ.get("MAKE_WEBHOOK_URL"):
+        print("Learning skipped: MAKE_WEBHOOK_URL not set.")
+        return None
+    data = research.load_learn()
+    do_stats = force or research.due(data, "last_stats", rc.get("stats_every_hours", 44))
+    do_market = force or research.due(data, "last_market", 24 * rc.get("market_every_days", 10))
+    if not (do_stats or do_market):
+        print("Learning: data is fresh, nothing to fetch.")
+        return None
+    state = st.load()
+    try:
+        text = research.learn(cfg, state, do_market=do_market)
+    except Exception:  # noqa: BLE001 - learning must never stop clips being made
+        traceback.print_exc()
+        return None
+    st.save(state)
+    print(text)
+    summary("### What the bot learned\n" + text.replace("\n", "  \n"))
+    if cfg["publish"].get("telegram") and os.environ.get("TELEGRAM_BOT_TOKEN"):
+        from .publish import telegram_text
+        try:
+            telegram_text("SIX STAR CLIPS - what's working\n\n" + text)
+        except Exception as e:  # noqa: BLE001
+            print(f"Telegram failed: {e}")
+    return text
+
+
 def cmd_tick(args):
-    """Scheduled run: send live alerts, then top the schedule back up to a full day."""
+    """Scheduled run: send live alerts, learn from results, then top the schedule up to a full day."""
     cmd_alerts(args)
+    cmd_learn(args)
     cfg = load_cfg(args.config)
     state = st.load()
     now = select.now_utc()
@@ -223,10 +258,11 @@ def twitch_candidates(streamers, cfg, state, usable, since, now, n):
                 out.append(c)
     # The clips page doesn't say which game a clip is from, so check the best few one by one.
     ranked = sorted(out, key=lambda c: select.score(c, now), reverse=True)
-    checked, want = [], max(n * 4, 8)
+    checked, want, tries = [], max(n * 4, 8), 0
     for c in ranked:
-        if len(checked) >= want:
+        if len(checked) >= want or tries >= sel.get("max_game_checks", 60):
             break
+        tries += 1
         g = keyless.clip_game(c["url"])
         if g and g.strip().lower() == cfg["game_name"].lower():
             checked.append(c)
@@ -287,6 +323,7 @@ def queued_clips(cfg, state):
 
 def cmd_run(args):
     cfg = load_cfg(args.config)
+    select.HALF_LIFE_H = float(cfg["selection"].get("half_life_hours", 168))
     state = st.load()
     streamers = [s for s in cfg["streamers"] if s.get("enabled")]
     sel = cfg["selection"]
@@ -339,7 +376,8 @@ def cmd_run(args):
         credit = select.credit_text(s)
         layout = "split" if s.get("facecam") else "blur"
         disclosure = "#ad" if s.get("campaign") else None
-        print(f"\n> {s['name']}: '{c['title'][:70]}' (score {c['view_count']}) {c['url']}")
+        print(f"\n> {s['name']}: '{c['title'][:70]}' ({c['view_count']:,} views, "
+              f"score {select.score(c, now):,.0f}) {c['url']}")
         workdir = tempfile.mkdtemp(prefix="clip_")
         try:
             if "_yt" in c:
@@ -496,12 +534,14 @@ def main():
     sub.add_parser("report")
     sub.add_parser("alerts")
     sub.add_parser("tick")
+    sub.add_parser("learn")
     t = sub.add_parser("render-test")
     t.add_argument("video")
     t.add_argument("hook")
     t.add_argument("--facecam", help="x,y,w,h in 1920x1080 source")
     args = p.parse_args()
-    {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "tick": cmd_tick, "render-test": cmd_render_test}[args.cmd](args)
+    {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "tick": cmd_tick,
+     "learn": lambda a: cmd_learn(a), "render-test": cmd_render_test}[args.cmd](args)
 
 
 if __name__ == "__main__":

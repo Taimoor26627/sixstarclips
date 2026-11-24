@@ -95,3 +95,11 @@ On a computer with Claude Code installed, run `claude setup-token` and save the 
 - Credit strip and Twitch link on every clip, with `#ad` and the campaign hashtags where a campaign requires them.
 - Skips clips whose titles look like story spoilers (Rockstar takes spoilers down), and anything not in the GTA 6 category.
 - Max 3 posts per streamer per day. Never the same clip twice, and never the same opening line within 7 days.
+
+## How the bot gets better every day
+
+- **Proven moments only.** It picks the most-viewed GTA 6 clips of the last 30 days (Twitch day/week/month top clips, and the most-viewed GTA 6 streams of YouTube streamers), not just the newest ones.
+- **Audience research.** About every 10 days it looks up the most-viewed GTA 6 Shorts about each streamer on YouTube. Streamers whose audiences watch lots of Shorts get picked more often, and clips about the topics those audiences like get a boost. Results: `reports/research.md`.
+- **Learns from your own channel.** About every 2 days it reads the views of every Short it posted. Streamers whose Shorts do well on your channel get picked more and weak ones less. Results: `reports/performance.md`. A summary is sent to Telegram.
+- **Better hooks (optional):** add the `CLAUDE_CODE_OAUTH_TOKEN` secret (run `claude setup-token` on a computer with Claude Code) and every hook and title is written from the clip's transcript and what that streamer's audience already watches.
+- The learning uses the same Make scenario (a read-only YouTube route), about 4 Make operations per call, so it stays inside the free 1,000 a month.

@@ -48,11 +48,13 @@ def _channel_url(s):
     return f"https://www.youtube.com/{ch.lstrip('/')}/streams"
 
 
-def recent_streams(s, max_items=6):
+def recent_streams(s, max_items=20, keep=5):
+    """The channel's most-viewed GTA 6 past streams among its last `max_items` streams."""
     try:
         with yt_dlp.YoutubeDL(_opts({**_FLAT, "playlistend": max_items})) as ydl:
             info = ydl.extract_info(_channel_url(s), download=False) or {}
-        return [e for e in (info.get("entries") or []) if e and e.get("id")]
+        rows = [e for e in (info.get("entries") or []) if e and e.get("id") and GTA_RE.search(e.get("title") or "")]
+        return sorted(rows, key=lambda e: e.get("view_count") or 0, reverse=True)[:keep]
     except Exception as e:  # noqa: BLE001
         print(f"  could not list streams for {s['name']}: {e}")
         return []
@@ -109,8 +111,9 @@ def candidates(s, cfg, state, lookback_hours):
                 "id": cid,
                 "url": f"https://www.youtube.com/watch?v={e['id']}&t={int(h['start_time'])}s",
                 "title": info.get("title") or "",
-                # comparable-ish to Twitch clip views so both compete fairly
-                "view_count": int(h["value"] * cfg["selection"].get("youtube_peak_weight", 40000)),
+                # comparable-ish to Twitch clip views: how hot the moment is x how big the stream was
+                "view_count": int(h["value"] * min(cfg["selection"].get("youtube_peak_weight", 40000),
+                                                   0.05 * (info.get("view_count") or 0) + 2000)),
                 "created_at": created,
                 "duration": 35.0,
                 "_yt": {"video_id": e["id"], "start": h["start_time"], "end": h["end_time"], "duration": dur},

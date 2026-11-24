@@ -8,13 +8,21 @@ channel:
 game_name: "Grand Theft Auto VI"   # Twitch category to clip from
 
 selection:
-  lookback_hours: 72               # clips made in the last 3 days
-  min_views: 200                   # skip Twitch clips with fewer views
+  # Proven moments first: the most-viewed GTA 6 clips of the last month, not just the newest.
+  lookback_hours: 720              # clips made in the last 30 days
+  half_life_hours: 168             # a week-old clip needs 2x the views of a new one to win
+  min_views: 500                   # skip Twitch clips with fewer views
+  max_game_checks: 60              # how many top clips to check are really GTA 6
   min_duration: 8                  # seconds
   max_per_streamer_per_day: 2      # spread posts across streamers
   posts_per_run: 1                 # each scheduled run posts this many
-  youtube_lookback_hours: 72       # YouTube streams: use streams from the last 3 days
+  youtube_lookback_hours: 720      # YouTube: most-viewed GTA 6 streams of the last 30 days
   youtube_peak_weight: 40000       # how strongly YouTube "most replayed" peaks compete with Twitch clips
+
+research:
+  # Learning loop (uses the Make scenario's read-only YouTube route, ~4 Make operations per call).
+  stats_every_hours: 44            # re-read our Shorts' views about every 2 days (1 call)
+  market_every_days: 10            # re-research each streamer's audience (~20 calls)
 
 schedule:
   # One run makes the whole day's clips and schedules them on YouTube at these times.
