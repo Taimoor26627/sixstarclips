@@ -110,6 +110,78 @@
    "publish_at": "2026-11-24T00:00:00Z",
    "campaign": true,
    "alerted": true
+  },
+  "899026078": {
+   "at": "2026-11-24T17:10:37.088960+00:00",
+   "login": "lacy",
+   "views_at_pick": 9183,
+   "hook": "Lacy was NOT ready for this",
+   "title": "Lacy was NOT ready for this in GTA 6",
+   "youtube_id": "8g9hV34Hl5g",
+   "source": "https://www.twitch.tv/lacy/clip/CloudyJoyousAlmondBibleThump--4P8K4-5MiTiWMjA",
+   "publish_at": "2026-11-24T20:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "3141724020": {
+   "at": "2026-11-24T17:11:49.300176+00:00",
+   "login": "ishowspeed",
+   "views_at_pick": 4912,
+   "hook": "speed finds ALIEN in gta",
+   "title": "IShowSpeed: Speed finds ALIEN in gta",
+   "youtube_id": "s7R-_7jn8RI",
+   "source": "https://www.twitch.tv/ishowspeed/clip/DiligentCloudyAnteaterRlyTho-wToiIPYE4haHsuxU",
+   "publish_at": "2026-11-25T00:00:00Z",
+   "campaign": false,
+   "alerted": false
+  },
+  "2274363492": {
+   "at": "2026-11-24T17:14:34.159779+00:00",
+   "login": "clix",
+   "views_at_pick": 2139,
+   "hook": "Clix's worst GTA 6 moment yet",
+   "title": "Clix's worst GTA 6 moment yet",
+   "youtube_id": "dD9rmiwa68w",
+   "source": "https://www.twitch.tv/clix/clip/TalentedCrackyMinkTBTacoRight-ZM1WeRFKztFINBwp",
+   "publish_at": "2026-11-25T04:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "3259081899": {
+   "at": "2026-11-24T17:15:03.676956+00:00",
+   "login": "yourragegaming",
+   "views_at_pick": 457,
+   "hook": "chat saw it before YourRAGE did",
+   "title": "Chat saw it before YourRAGE did in GTA 6",
+   "youtube_id": "o4ME6UnU_CY",
+   "source": "https://www.twitch.tv/yourragegaming/clip/RockyEasySushiPipeHype-yUHeeluG6u5_HQro",
+   "publish_at": "2026-11-25T08:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "2748315716": {
+   "at": "2026-11-24T17:16:59.223168+00:00",
+   "login": "clix",
+   "views_at_pick": 279,
+   "hook": "Clix completely lost it in GTA 6",
+   "title": "Clix completely lost it in GTA 6",
+   "youtube_id": "7MDHZS2erNE",
+   "source": "https://www.twitch.tv/clix/clip/TangibleClearFalconTBCheesePull-5iS-0eTtCGYums3g",
+   "publish_at": "2026-11-25T12:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "1993905699": {
+   "at": "2026-11-24T17:19:57.816760+00:00",
+   "login": "yourragegaming",
+   "views_at_pick": 302,
+   "hook": "YourRAGE's worst GTA 6 moment yet",
+   "title": "YourRAGE's worst GTA 6 moment yet",
+   "youtube_id": "GDj0Seq6VCs",
+   "source": "https://www.twitch.tv/yourragegaming/clip/FunnyPuzzledPieDoubleRainbow-79lZizIGM0W5Ehdu",
+   "publish_at": "2026-11-25T16:00:00Z",
+   "campaign": true,
+   "alerted": false
   }
  }
 }
