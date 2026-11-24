@@ -132,21 +132,58 @@ def make_hook(clip, streamer, cfg, recent_openers, transcript=""):
         if got and got["hook"].lower() not in recent_openers:
             return got["hook"], got["title"]
 
+    quote = transcript_quote(transcript) if transcript else None
     if not looks_like_default_title(raw, cleaned) and cleaned.lower() not in recent_openers:
-        hook = cleaned
+        hook = cleaned                       # a viewer named the clip: usually says what happened
+        title = hook
+    elif quote and quote.lower() not in recent_openers:
+        hook = f'"{quote}"'                  # the streamer's own words: specific to this clip
+        title = f'{name}: "{quote}"'
     else:
         options = [t.format(name=name) for t in cfg["hooks"]["templates"]]
         fresh = [o for o in options if o.lower() not in recent_openers] or options
         hook = random.choice(fresh)
+        title = hook
 
-    title = hook.capitalize() if hook.isupper() else hook[:1].upper() + hook[1:]
-    if "gta" not in title.lower():
-        title = f"{title} in GTA 6"
+    title = title.capitalize() if title.isupper() else title[:1].upper() + title[1:]
     low = title.lower()
     if name.lower() not in low:
         first_names = [p for p in name.lower().split() if len(p) > 2]
-        title = f"{title} | {name}" if any(p in low for p in first_names) else f"{name}: {title}"
+        if not any(p in low for p in first_names):
+            title = f"{name} {title[:1].lower() + title[1:]}" if title.lower().startswith(("was ", "vs ", "can't", "completely", "broke")) else f"{name}: {title}"
+    if "gta" not in title.lower():
+        title = f"{title} in GTA 6"
+    # Top GTA 6 Shorts end titles with an emoji reaction (research: reports/research.md)
+    if not EMOJI_RE.search(title):
+        title = f"{title} {random.choice(['😭', '💀', '😂', '😭💀', '🤣'])}"
     return hook, title[:95]
+
+
+QUOTE_WORDS = re.compile(r"\b(nah|bro|bruh|what|why|no|yo|wait|stop|help|oh my god|omg|cops?|police|run|"
+                         r"chat|crazy|insane|bro what|hell nah|let'?s go|i'?m done|who)\b", re.I)
+
+
+def transcript_quote(text):
+    """Most quotable short line the streamer said (3-8 words), for hook and title."""
+    from .captions import censor
+
+    parts = re.split(r"(?<=[.!?])\s+", text or "")
+    best, best_s = None, 0.0
+    for p in parts:
+        words = p.strip().split()
+        if not 3 <= len(words) <= 8:
+            continue
+        line = " ".join(censor(w) for w in words).strip(" .,")
+        if "*" in line or not re.search(r"[a-z]{3}", line, re.I):
+            continue
+        sc = 1.0 + 2 * p.count("!") + p.count("?") + len(QUOTE_WORDS.findall(p))
+        sc -= 0.15 * abs(len(words) - 5)
+        if sc > best_s:
+            best, best_s = line, sc
+    if not best or best_s < 2:
+        return None
+    best = re.sub(r"\s+", " ", best)
+    return best[:1].upper() + best[1:]
 
 
 def source_link(streamer):

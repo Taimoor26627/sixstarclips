@@ -391,7 +391,8 @@ def cmd_run(args):
             hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}}, recent)
             dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
                                          facecam=s.get("facecam"), disclosure=disclosure, language=lang)
-            if cfg["hooks"].get("use_claude") and transcript and not c.get("_queued"):
+            if transcript and not c.get("_queued"):
+                # Now that we know what was said: better hook (Claude if set up, else the best quote).
                 h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
                 if h2 != hook:
                     hook, title = h2, t2
