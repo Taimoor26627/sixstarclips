@@ -102,7 +102,7 @@ def send_plan(done, cfg):
     from .publish import telegram_send, telegram_text
 
     handle = cfg["channel"]["handle"]
-    lines = [f"{len(done)} Shorts made and scheduled on YouTube {handle}:", ""]
+    lines = [f"{len(done)} new Short{'s' if len(done) != 1 else ''} made and scheduled on YouTube {handle}:", ""]
     todo = []
     for i, d in enumerate(sorted(done, key=lambda x: x["publish_at"]), 1):
         when = local_label(d["publish_at"], cfg)
@@ -146,6 +146,23 @@ def cmd_alerts(args):
             changed = True
     if changed:
         st.save(state)
+
+
+def cmd_tick(args):
+    """Scheduled run: send live alerts, then top the schedule back up to a full day."""
+    cmd_alerts(args)
+    cfg = load_cfg(args.config)
+    state = st.load()
+    now = select.now_utc()
+    ahead = sum(1 for v in state["posted"].values()
+                if v.get("publish_at") and select.parse_time(v["publish_at"]) > now)
+    want = cfg.get("schedule", {}).get("per_day", 6)
+    if ahead >= want:
+        print(f"{ahead} Shorts already scheduled ahead; nothing to make.")
+        return
+    print(f"Only {ahead} scheduled ahead; making {want - ahead} more.")
+    args.batch, args.max_posts, args.dry_run = True, want - ahead, False
+    cmd_run(args)
 
 
 def checklist(s, cfg, yt_id):
@@ -223,6 +240,9 @@ def youtube_candidates(streamers, cfg, state):
 
     sel = cfg["selection"]
     out = []
+    if streamers and not youtube_source.available():
+        print("YouTube streamers skipped: YouTube blocks GitHub's servers without the YT_COOKIES secret.")
+        return out
     for s in streamers:
         if st.posted_today(state, s["login"]) >= sel["max_per_streamer_per_day"]:
             continue
@@ -475,12 +495,13 @@ def main():
     r.add_argument("--batch", action="store_true", help="make the whole day's clips and schedule them")
     sub.add_parser("report")
     sub.add_parser("alerts")
+    sub.add_parser("tick")
     t = sub.add_parser("render-test")
     t.add_argument("video")
     t.add_argument("hook")
     t.add_argument("--facecam", help="x,y,w,h in 1920x1080 source")
     args = p.parse_args()
-    {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "render-test": cmd_render_test}[args.cmd](args)
+    {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "tick": cmd_tick, "render-test": cmd_render_test}[args.cmd](args)
 
 
 if __name__ == "__main__":

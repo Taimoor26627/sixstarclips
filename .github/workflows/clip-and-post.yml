@@ -1,9 +1,7 @@
 name: Make today's clips
 
 on:
-  # Run this ONCE a day (Actions > Make today's clips > Run workflow). It makes the
-  # day's Shorts, schedules each on YouTube at the go-live times in config.yaml,
-  # and sends you one Telegram message with the plan.
+  # Optional manual run: Actions > Make today's clips > Run workflow.
   workflow_dispatch:
     inputs:
       count:
@@ -14,8 +12,13 @@ on:
         type: boolean
         default: false
   schedule:
-    # Only sends "LIVE NOW" alerts a few minutes after each go-live time. It never posts.
+    # Every ~4 hours: send "LIVE NOW" alerts, then top the YouTube schedule back up
+    # to a full day of Shorts so no slot is ever empty.
     - cron: "4 0,4,8,12,16,20 * * *"
+  push:
+    # Lets Claude start a run on request by changing trigger/run-now.txt.
+    branches: [main]
+    paths: ["trigger/**"]
 
 permissions:
   contents: write
@@ -26,9 +29,8 @@ concurrency:
 
 jobs:
   clip:
-    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       HAS_CLAUDE: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
     steps:
@@ -42,8 +44,13 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
 
+      - name: Install Deno (yt-dlp needs it for YouTube)
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Install Python packages
-        run: pip install -r requirements.txt
+        run: pip install -U -r requirements.txt
 
       - name: Cache caption model
         uses: actions/cache@v4
@@ -55,20 +62,25 @@ jobs:
         if: ${{ env.HAS_CLAUDE == 'true' }}
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Find, render and publish clips
+      - name: Make and schedule clips
         env:
           TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
           TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
         run: |
-          python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
-            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
+              ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          else
+            python -m clipper tick
+          fi
 
       - name: Keep the rendered clips for 3 days
         if: always()
@@ -86,25 +98,3 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add state || true
           git diff --cached --quiet || (git commit -m "Update posted clips" && git pull --rebase && git push)
-
-  alerts:
-    if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install requests PyYAML
-      - name: Send "live now" alerts
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python -m clipper alerts
-      - name: Save alert status
-        run: |
-          git config user.name "clip-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state
-          git diff --cached --quiet || (git commit -m "Live alerts sent" && git pull --rebase && git push)

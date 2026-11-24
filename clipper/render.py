@@ -42,7 +42,7 @@ def video_filter(layout, w, h, facecam, ass_name, fonts_dir, fps):
         f"[0:v]split=2[bg][fg];"
         f"[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
         f"boxblur=24:2,eq=brightness=-0.14[bgb];"
-        f"[fg]scale=1080:-2[fgs];"
+        f"[fg]scale=1210:-2,crop=1080:ih[fgs];"
         f"[bgb][fgs]overlay=(W-w)/2:(H-h)/2-80,fps={fps},{subs},format=yuv420p[v]"
     )
 
@@ -73,15 +73,31 @@ def render(src, ass_path, out_path, cfg, layout="blur", facecam=None, fonts_dir=
 
 
 def export_small(src, out_path, max_bytes=4_700_000):
-    """A lighter 720x1280 copy that fits Make's free-plan 5 MB file limit."""
+    """A full 1080x1920 copy that fits Make's free-plan 5 MB limit.
+
+    Uses HEVC (H.265), which YouTube accepts and which keeps roughly twice the
+    detail of H.264 at the same size. Two-pass so the file lands just under the cap.
+    """
     _, _, dur, _ = probe(src)
     audio_kbps = 96
-    video_kbps = min(3500, max(350, int((max_bytes * 8 / 1000) / max(dur, 1) * 0.92) - audio_kbps))
-    subprocess.run(
-        ["ffmpeg", "-y", "-v", "error", "-i", src, "-vf", "scale=720:1280",
-         "-c:v", "libx264", "-preset", "veryfast", "-b:v", f"{video_kbps}k",
-         "-maxrate", f"{int(video_kbps * 1.2)}k", "-bufsize", f"{video_kbps * 2}k",
-         "-c:a", "aac", "-b:a", f"{audio_kbps}k", "-movflags", "+faststart", out_path],
-        check=True, timeout=600,
-    )
+    budget = max_bytes
+    for _ in range(3):
+        video_kbps = max(400, int((budget * 8 / 1000) / max(dur, 1) * 0.94) - audio_kbps)
+        stats = out_path + ".x265"
+        common = ["-vf", "scale=1080:1920:flags=lanczos", "-c:v", "libx265", "-preset", "fast",
+                  "-b:v", f"{video_kbps}k", "-tag:v", "hvc1", "-pix_fmt", "yuv420p"]
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", src, *common,
+                        "-x265-params", f"pass=1:stats={stats}:log-level=error", "-an", "-f", "mp4", os.devnull],
+                       check=True, timeout=900)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", src, *common,
+                        "-x265-params", f"pass=2:stats={stats}:log-level=error",
+                        "-c:a", "aac", "-b:a", f"{audio_kbps}k", "-movflags", "+faststart", out_path],
+                       check=True, timeout=900)
+        size = os.path.getsize(out_path)
+        if size <= max_bytes:
+            break
+        budget = int(budget * max_bytes / size * 0.95)
+    for f in os.listdir(os.path.dirname(out_path) or "."):
+        if f.startswith(os.path.basename(stats)):
+            os.remove(os.path.join(os.path.dirname(out_path) or ".", f))
     return os.path.getsize(out_path)

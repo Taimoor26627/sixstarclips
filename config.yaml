@@ -37,7 +37,7 @@ publish:
 render:
   fps: 30
   crf: 21
-  max_seconds: 59
+  max_seconds: 45                # shorter = sharper under the 5 MB upload cap
 
 captions:
   enabled: true
@@ -119,6 +119,10 @@ streamers:
   - {platform: youtube, login: totalgaming, channel: "@TotalGaming093", name: "Total Gaming", language: hi, enabled: true, campaign: false, hashtags: ["#TotalGaming"]}   # check
   - {platform: youtube, login: payalgaming, channel: "@PAYALGAMING", name: "Payal Gaming", language: hi, enabled: true, campaign: false, hashtags: ["#PayalGaming"]}   # check
   - {platform: youtube, login: technogamerz, channel: "@TechnoGamerzOfficial", name: "Techno Gamerz", language: hi, enabled: true, campaign: false, hashtags: ["#TechnoGamerz"]}
+  - {platform: youtube, login: sharkshe, channel: "@Sharkshe", name: "Sharkshe", language: hi, enabled: true, campaign: false, hashtags: ["#Sharkshe"]}   # check
+  - {platform: youtube, login: hindustangamer, channel: "@HindustanGamer", name: "Hindustan Gamer", language: hi, enabled: true, campaign: false, hashtags: ["#HindustanGamer"]}   # check
+  - {platform: youtube, login: lokeshgamer, channel: "@LokeshGamer", name: "Lokesh Gamer", language: hi, enabled: true, campaign: false, hashtags: ["#LokeshGamer"]}   # check
+  - {platform: youtube, login: rakazone, channel: "@RakaZoneGaming", name: "RakaZone", language: hi, enabled: true, campaign: false, hashtags: ["#RakaZone"]}   # check
 
   # Optional per-streamer facecam box (in the 1920x1080 source) for the
   # split layout (facecam on top, gameplay below). Example:

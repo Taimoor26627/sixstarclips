@@ -16,6 +16,28 @@ from .select import now_utc
 
 _FLAT = {"quiet": True, "no_warnings": True, "extract_flat": "in_playlist", "skip_download": True}
 _FULL = {"quiet": True, "no_warnings": True, "skip_download": True}
+
+
+def cookie_file():
+    """YouTube blocks cloud servers unless the request carries cookies from a signed-in
+    browser. The YT_COOKIES secret holds a cookies.txt (Netscape format) from a SPARE account."""
+    data = os.environ.get("YT_COOKIES", "").strip()
+    if not data:
+        return None
+    path = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "yt_cookies.txt")
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(data + "\n")
+    return path
+
+
+def available():
+    return cookie_file() is not None
+
+
+def _opts(base):
+    c = cookie_file()
+    return {**base, "cookiefile": c} if c else base
 GTA_RE = re.compile(r"gta\s*(6|vi)\b|grand theft auto\s*(6|vi)\b|gta6|vice city", re.I)
 
 
@@ -28,7 +50,7 @@ def _channel_url(s):
 
 def recent_streams(s, max_items=6):
     try:
-        with yt_dlp.YoutubeDL({**_FLAT, "playlistend": max_items}) as ydl:
+        with yt_dlp.YoutubeDL(_opts({**_FLAT, "playlistend": max_items})) as ydl:
             info = ydl.extract_info(_channel_url(s), download=False) or {}
         return [e for e in (info.get("entries") or []) if e and e.get("id")]
     except Exception as e:  # noqa: BLE001
@@ -37,7 +59,7 @@ def recent_streams(s, max_items=6):
 
 
 def full_info(video_id):
-    with yt_dlp.YoutubeDL(_FULL) as ydl:
+    with yt_dlp.YoutubeDL(_opts(_FULL)) as ydl:
         return ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False) or {}
 
 
@@ -118,8 +140,9 @@ def fetch(c, workdir, clip_len=35, tail=8):
     win_start = max(0.0, y["start"] - 40)
     win_end = min(y["duration"], max(y["end"], y["start"] + 60) + 40)
     raw = os.path.join(workdir, "window.%(ext)s")
+    cookies = ["--cookies", cookie_file()] if cookie_file() else []
     subprocess.run(
-        ["yt-dlp", "-q", "--no-warnings",
+        ["yt-dlp", "-q", "--no-warnings", *cookies,
          "-f", "bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b[height<=1080]/b",
          "--download-sections", f"*{win_start:.0f}-{win_end:.0f}",
          "--merge-output-format", "mp4", "-o", raw,

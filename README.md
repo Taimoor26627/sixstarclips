@@ -1,6 +1,6 @@
 # Six Star Clips: GTA 6 streamer clip bot
 
-**Run it once a day:** GitHub → **Actions** → **Make today's clips** → **Run workflow**.
+**It runs itself.** About every 4 hours it tops the YouTube schedule back up to a full day of Shorts (and sends "LIVE NOW" alerts). You can also start it any time: GitHub → **Actions** → **Make today's clips** → **Run workflow**.
 
 That one run:
 1. Finds the best new GTA 6 moments from the streamers in `config.yaml` (Twitch clips plus YouTube "most replayed" peaks)
@@ -8,7 +8,9 @@ That one run:
 3. Uploads all of them to YouTube, each **scheduled** at the next free go-live time (`schedule.slots`: 1, 5, 9 AM and 1, 5, 9 PM Pakistan time)
 4. Sends you **one Telegram message**: what goes live when, with links, and which ones need a Content Rewards submission
 
-A few minutes after each go-live time you also get a short "LIVE NOW" ping. Run it again the same day and it fills the next free slots.
+A few minutes after each go-live time you also get a short "LIVE NOW" ping.
+
+**YouTube streamers** (Ducky Bhai, CarryMinati and others) need the `YT_COOKIES` secret: YouTube blocks GitHub's servers otherwise. Use a cookies.txt from a spare YouTube account (not your channel's account) and refresh it every ~2 weeks.
 
 ---
 
