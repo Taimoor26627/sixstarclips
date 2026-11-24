@@ -258,14 +258,18 @@ def twitch_candidates(streamers, cfg, state, usable, since, now, n):
                 out.append(c)
     # The clips page doesn't say which game a clip is from, so check the best few one by one.
     ranked = sorted(out, key=lambda c: select.score(c, now), reverse=True)
-    checked, want, tries = [], max(n * 4, 8), 0
+    checked, want, tries, per = [], max(n * 4, 8), 0, {}
     for c in ranked:
         if len(checked) >= want or tries >= sel.get("max_game_checks", 60):
             break
+        login = c["_streamer"]["login"]
+        if per.get(login, 0) >= 3:      # keep a mix of streamers, not just the biggest two
+            continue
         tries += 1
         g = keyless.clip_game(c["url"])
         if g and g.strip().lower() == cfg["game_name"].lower():
             checked.append(c)
+            per[login] = per.get(login, 0) + 1
         else:
             print(f"  skip (game: {g}): {c['title'][:60]}")
     return checked

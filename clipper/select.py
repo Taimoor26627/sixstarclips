@@ -55,6 +55,8 @@ def score(clip, now):
     age_h = max(0.0, (now - parse_time(clip["created_at"])).total_seconds() / 3600)
     login = clip.get("_streamer", {}).get("login", "")
     w = research.weight(login) if login else 1.0
+    if clip.get("_streamer", {}).get("campaign"):
+        w *= 1.3   # paid Content Rewards campaign: these views earn money
     kws, _ = research.audience(login) if login else ([], [])
     title = (clip.get("title") or "").lower()
     if kws and any(k in title for k in kws[:8]):
