@@ -85,7 +85,7 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/LovelyEnchantingFerretYouWHY-fBBqa50b_-5sniEi",
    "publish_at": "2026-11-23T16:00:00Z",
    "campaign": false,
-   "alerted": false
+   "alerted": true
   },
   "1055626704": {
    "at": "2026-11-22T21:01:37.132784+00:00",
@@ -97,7 +97,7 @@
    "source": "https://www.twitch.tv/lacy/clip/EnchantingSlickSkirretKappaWealth-b078IIWpjDBr8I2h",
    "publish_at": "2026-11-23T20:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "3591111902": {
    "at": "2026-11-23T18:01:57.388857+00:00",
@@ -109,7 +109,7 @@
    "source": "https://www.twitch.tv/kaicenat/clip/YawningNimbleCheetahKAPOW-8UVSu4w5z4RZj_OF",
    "publish_at": "2026-11-24T00:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   }
  }
 }
