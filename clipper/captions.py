@@ -11,6 +11,19 @@ WHITE = "&H00FFFFFF"
 _model_cache = {}
 
 
+def _load_audio(path):
+    """16 kHz mono float32 audio via ffmpeg (avoids PyAV version problems)."""
+    import subprocess
+
+    import numpy as np
+
+    raw = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", path, "-ac", "1", "-ar", "16000", "-f", "f32le", "-"],
+        capture_output=True, check=True, timeout=300,
+    ).stdout
+    return np.frombuffer(raw, dtype=np.float32).copy()
+
+
 def transcribe(path, model_size="small", language="en"):
     """Returns [{"start","end","word"}]. Empty list if speech can't be read.
     language "en" = English captions. Any other value (e.g. "hi", "ur") = speech in that
@@ -25,7 +38,7 @@ def transcribe(path, model_size="small", language="en"):
     else:
         kw = {"language": None if language == "auto" else language, "task": "translate"}
     segments, _ = model.transcribe(
-        path, word_timestamps=True, vad_filter=True, beam_size=1, **kw
+        _load_audio(path), word_timestamps=True, vad_filter=True, beam_size=1, **kw
     )
     words = []
     for seg in segments:

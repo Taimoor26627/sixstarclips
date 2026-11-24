@@ -275,12 +275,23 @@ def cmd_run(args):
                            else sel.get("posts_per_run", 1))
     since = now - timedelta(hours=sel["lookback_hours"])
 
+    reasons = {}
+
     def usable(c):
-        return (c["id"] not in state["posted"]
-                and c["view_count"] >= sel["min_views"]
-                and c["duration"] >= sel["min_duration"]
-                and select.parse_time(c["created_at"]) >= since
-                and not select.has_spoiler(c["title"], cfg.get("spoiler_words", [])))
+        why = None
+        if c["id"] in state["posted"]:
+            why = "already posted"
+        elif c["view_count"] < sel["min_views"]:
+            why = "too few views"
+        elif c["duration"] and c["duration"] < sel["min_duration"]:
+            why = "too short"
+        elif select.parse_time(c["created_at"]) < since:
+            why = "too old"
+        elif select.has_spoiler(c["title"], cfg.get("spoiler_words", [])):
+            why = "spoiler words"
+        if why:
+            reasons[why] = reasons.get(why, 0) + 1
+        return why is None
 
     tw_streamers = [s for s in streamers if s.get("platform", "twitch") == "twitch"]
     yt_streamers = [s for s in streamers if s.get("platform") == "youtube"]
@@ -289,7 +300,7 @@ def cmd_run(args):
         candidates += youtube_candidates(yt_streamers, cfg, state)
     except Exception:  # noqa: BLE001 - YouTube trouble must not stop Twitch clips
         traceback.print_exc()
-    print(f"{len(candidates)} candidate clips from {len(streamers)} streamers")
+    print(f"{len(candidates)} candidate clips from {len(streamers)} streamers; skipped: {reasons}")
 
     queued = queued_clips(cfg, state)
     chosen = queued[:n] + select.pick([c for c in candidates if c["id"] not in {q["id"] for q in queued}],

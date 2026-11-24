@@ -17,7 +17,7 @@ def _iso(ts):
     return datetime.fromtimestamp(ts, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def list_clips(login, ranges=("24hr", "7d"), per_range=30):
+def list_clips(login, ranges=("24hr", "7d"), per_range=60):
     """Top clips of the last 24h and 7d, merged, newest data wins."""
     seen = {}
     for rng in ranges:

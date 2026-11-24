@@ -8,7 +8,7 @@ channel:
 game_name: "Grand Theft Auto VI"   # Twitch category to clip from
 
 selection:
-  lookback_hours: 36               # only clips made in the last 36 hours
+  lookback_hours: 72               # clips made in the last 3 days
   min_views: 200                   # skip Twitch clips with fewer views
   min_duration: 8                  # seconds
   max_per_streamer_per_day: 2      # spread posts across streamers
