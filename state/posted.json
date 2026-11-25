@@ -229,7 +229,7 @@
    "source": "https://www.twitch.tv/clix/clip/TalentedCrackyMinkTBTacoRight-ZM1WeRFKztFINBwp",
    "publish_at": "2026-11-25T04:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -248,7 +248,7 @@
    "source": "https://www.twitch.tv/yourragegaming/clip/RockyEasySushiPipeHype-yUHeeluG6u5_HQro",
    "publish_at": "2026-11-25T08:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -267,7 +267,7 @@
    "source": "https://www.twitch.tv/clix/clip/TangibleClearFalconTBCheesePull-5iS-0eTtCGYums3g",
    "publish_at": "2026-11-25T12:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -317,6 +317,42 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/ViscousStormySquirrelDancingBanana-2gkXgAHz-CwpC3GO",
    "publish_at": "2026-11-26T00:00:00Z",
    "campaign": false,
+   "alerted": false
+  },
+  "4188544786": {
+   "at": "2026-11-25T14:12:31.488382+00:00",
+   "login": "kaicenat",
+   "views_at_pick": 87452,
+   "hook": "kai cenat argues with his new girlfriend",
+   "title": "Kai cenat argues with his new girlfriend in GTA 6 😭",
+   "youtube_id": "yaSQKEvWsLo",
+   "source": "https://www.twitch.tv/kaicenat/clip/UnusualConsiderateLionGingerPower-oJF7Ao2MX9omrH0x",
+   "publish_at": "2026-11-26T04:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "1827983684": {
+   "at": "2026-11-25T14:13:10.395361+00:00",
+   "login": "lacy",
+   "views_at_pick": 86383,
+   "hook": "nobody warned Lacy about this",
+   "title": "Nobody warned Lacy about this in GTA 6 💀",
+   "youtube_id": "dYGeHzCzZRI",
+   "source": "https://www.twitch.tv/lacy/clip/SlickStylishBeaverStrawBeary-ljpqadoCXEhYwJx5",
+   "publish_at": "2026-11-26T08:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "3080134111": {
+   "at": "2026-11-25T14:15:49.027347+00:00",
+   "login": "asianjeff",
+   "views_at_pick": 2710,
+   "hook": "\"How do I uncrouch again?\"",
+   "title": "AsianJeff: \"How do I uncrouch again?\" in GTA 6 🤣",
+   "youtube_id": "ppnbkDUHzIM",
+   "source": "https://www.twitch.tv/asianjeff/clip/BlatantExquisiteMonitorGrammarKing-KZJb61NKnli7x9PO",
+   "publish_at": "2026-11-26T12:00:00Z",
+   "campaign": true,
    "alerted": false
   }
  }
