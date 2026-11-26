@@ -1,9 +1,9 @@
 # Audience research (top GTA 6 Shorts about each streamer)
 
-## Kai Cenat (weight x1.42)
+## Kai Cenat (weight x1.44)
 - Median views of top Shorts: 2,981,442; best: 12,683,492
 - What works: ishowspeed, trailer, like, official
-- Our average: 3 over 2 posts
+- Our average: 3 over 3 posts
 
   - Kai Cenat & IShowSpeed Got The Same GTA 6 Ending! 💔 (12,683,492 views, Zylok)
   - Rakai Asks Kai Cenat For Help Since He Is Struggling To Play GTA 6! 💀😭 (5,640,986 views, DaPlug)
@@ -12,10 +12,10 @@
   - iSHOWSPEED x GTA 6 | OFFICIAL TRAILER (4,376,541 views, IShowSpeed)
   - Kai Cenat Was Hopping Fences For His GTA 6 Trailer! 😭💀 (3,785,934 views, Succesful Celebrity)
 
-## Lacy (weight x0.78)
+## Lacy (weight x0.77)
 - Median views of top Shorts: 210,728; best: 3,706,874
 - What works: about, jason, ceo, twitch, marathon, reacts, gtavi, viral
-- Our average: 6 over 2 posts
+- Our average: 3 over 4 posts
 
   - Ron Surprising Lacy With A PS5 Pro For GTA 6! 😭🎮 (3,706,874 views, Aurafy)
   - Lacy Talks To The CEO Of Twitch About GTA 6! 😲 (665,996 views, WeenZone)
@@ -27,7 +27,7 @@
 ## Clix (weight x0.77)
 - Median views of top Shorts: 265,464; best: 2,044,154
 - What works: shower, has, into, lucia
-- Our average: 3 over 2 posts
+- Our average: 2 over 3 posts
 
   - When Every Youtuber QUIT ROBLOX FOR GTA 6... (2,044,154 views, truck)
   - Jason Reacts To Lacy Getting Pepper Sprayed During Their GTA 6 Marathon😲 (625,030 views, JasonTheWeen Fan)
@@ -39,7 +39,7 @@
 ## YourRAGE (weight x0.6)
 - Median views of top Shorts: 32,250; best: 1,824,659
 - What works: gtavi, npc, yourage, after, npcs, car, did, let, slide, tried
-- Our average: 1 over 1 posts
+- Our average: 0 over 2 posts
 
   - Yourrage gets hit by a trucker #yourrage #yourage #funny #gta6 #gtavi #ai #funnyvideo #truck (1,824,659 views, Monk)
   - YourRage Found Out The Hard Way After Kicking NPCs Car In GTA VI 😭🤣 (832,529 views, Snickerly)
@@ -60,10 +60,10 @@
   - Bro thinks it's fake 😭🥀 #AsianJeff #gta6 #memes #funny (32,807 views, CorefyYT)
   - While they're out partying btw. 😈 #AsianJeff #gta6 #shorts (32,668 views, CorefyYT)
 
-## IShowSpeed (weight x1.55)
+## IShowSpeed (weight x1.54)
 - Median views of top Shorts: 4,376,541; best: 12,683,492
 - What works: first, out, beat, finds
-- Our average: 3 over 1 posts
+- Our average: 1 over 2 posts
 
   - Kai Cenat & IShowSpeed Got The Same GTA 6 Ending! 💔 (12,683,492 views, Zylok)
   - I BEAT GTA 6! (6,756,667 views, IShowSpeed)

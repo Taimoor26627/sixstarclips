@@ -18,8 +18,8 @@
     "official"
    ],
    "our_avg_views": 3,
-   "our_posts": 2,
-   "weight": 1.42
+   "our_posts": 3,
+   "weight": 1.44
   },
   "lacy": {
    "median_views": 210728,
@@ -42,9 +42,9 @@
     "gtavi",
     "viral"
    ],
-   "our_avg_views": 6,
-   "our_posts": 2,
-   "weight": 0.78
+   "our_avg_views": 3,
+   "our_posts": 4,
+   "weight": 0.77
   },
   "clix": {
    "median_views": 265464,
@@ -63,8 +63,8 @@
     "into",
     "lucia"
    ],
-   "our_avg_views": 3,
-   "our_posts": 2,
+   "our_avg_views": 2,
+   "our_posts": 3,
    "weight": 0.77
   },
   "yourragegaming": {
@@ -90,8 +90,8 @@
     "slide",
     "tried"
    ],
-   "our_avg_views": 1,
-   "our_posts": 1,
+   "our_avg_views": 0,
+   "our_posts": 2,
    "weight": 0.6
   },
   "asianjeff": {
@@ -132,9 +132,9 @@
     "beat",
     "finds"
    ],
-   "our_avg_views": 3,
-   "our_posts": 1,
-   "weight": 1.55
+   "our_avg_views": 1,
+   "our_posts": 2,
+   "weight": 1.54
   },
   "ishowspeed_yt": {
    "median_views": 4376541,
@@ -359,6 +359,6 @@
    "weight": 0.62
   }
  },
- "last_stats": "2026-11-24T17:42:48.655050+00:00",
+ "last_stats": "2026-11-26T08:36:53.919941+00:00",
  "last_market": "2026-11-24T17:42:47.801405+00:00"
 }
