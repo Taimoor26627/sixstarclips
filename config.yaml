@@ -46,6 +46,7 @@ publish:
   make: true
 
 render:
+  layout: fill                   # fill = full-screen 9:16 | blur = whole frame on a blurred background
   fps: 30
   crf: 21
   max_seconds: 45                # shorter = sharper under the 5 MB upload cap

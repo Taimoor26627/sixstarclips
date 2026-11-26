@@ -38,6 +38,9 @@ def video_filter(layout, w, h, facecam, ass_name, fonts_dir, fps):
             f"[b]crop=ih*1080/1248:ih,scale=1080:1248[game];"
             f"[cam][game]vstack=inputs=2,fps={fps},{subs},format=yuv420p[v]"
         )
+    if layout == "fill":
+        # Full-screen 9:16: fill the whole frame (crops the sides, keeps the middle of the action).
+        return (f"[0:v]scale=-2:1920:flags=lanczos,crop=1080:1920,fps={fps},{subs},format=yuv420p[v]")
     return (
         f"[0:v]split=2[bg][fg];"
         f"[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"

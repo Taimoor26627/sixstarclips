@@ -53,7 +53,7 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
         except Exception as e:  # noqa: BLE001
             print(f"  captions skipped: {e}")
     ass = captions.build_ass(
-        words, hook, credit, dur, layout=layout if facecam else "blur",
+        words, hook, credit, dur, layout=layout if (facecam or layout != "split") else "blur",
         censor_words=cfg.get("captions", {}).get("censor_profanity", True),
         disclosure=disclosure,
     )
@@ -395,7 +395,7 @@ def cmd_run(args):
         s = c["_streamer"]
         lang = s.get("language", "en")
         credit = select.credit_text(s)
-        layout = "split" if s.get("facecam") else "blur"
+        layout = "split" if s.get("facecam") else cfg.get("render", {}).get("layout", "fill")
         disclosure = "#ad" if s.get("campaign") else None
         print(f"\n> {s['name']}: '{c['title'][:70]}' ({c['view_count']:,} views, "
               f"score {select.score(c, now):,.0f}) {c['url']}")
@@ -412,7 +412,7 @@ def cmd_run(args):
             hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}}, recent)
             dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
                                          facecam=s.get("facecam"), disclosure=disclosure, language=lang)
-            if transcript and not c.get("_queued"):
+            if not c.get("_queued"):
                 # Now that we know what was said: better hook (Claude if set up, else the best quote).
                 h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
                 if h2 != hook:

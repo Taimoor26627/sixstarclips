@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  models: read            # free GitHub Models: writes hooks and titles
 
 concurrency:
   group: clipper
@@ -74,11 +75,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             python -m clipper learn || true
             python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
               ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          elif [ "${{ contains(github.event.head_commit.message, '[now]') }}" = "true" ]; then
+            python -m clipper run --max-posts 1
           elif [ "${{ contains(github.event.head_commit.message, '[whoami]') }}" = "true" ]; then
             python -m clipper whoami
           elif [ "${{ contains(github.event.head_commit.message, '[stats]') }}" = "true" ]; then

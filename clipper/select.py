@@ -82,34 +82,71 @@ def pick(candidates, n, now):
     return chosen
 
 
-def _claude_hook(name, clip_title, transcript, login=""):
-    """Optional: ask Claude Code (on your own plan) for a hook. Returns dict or None."""
-    if not shutil.which("claude"):
+def ask_llm(prompt, timeout=120):
+    """Free text model. Claude Code (if its token is set), else GitHub Models (free, uses the
+    workflow's own GITHUB_TOKEN). Returns text or None."""
+    if shutil.which("claude") and (os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") or os.environ.get("ANTHROPIC_API_KEY")):
+        try:
+            out = subprocess.run(["claude", "-p", prompt, "--output-format", "text"],
+                                 capture_output=True, text=True, timeout=timeout).stdout
+            if out.strip():
+                return out
+        except Exception as e:  # noqa: BLE001
+            print(f"  claude skipped: {e}")
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        import requests
+        for model in ("openai/gpt-4.1", "openai/gpt-4.1-mini"):
+            try:
+                r = requests.post("https://models.github.ai/inference/chat/completions",
+                                  headers={"Authorization": f"Bearer {token}",
+                                           "Content-Type": "application/json"},
+                                  json={"model": model, "temperature": 0.9,
+                                        "messages": [{"role": "user", "content": prompt}]},
+                                  timeout=timeout)
+                if r.status_code == 200:
+                    return r.json()["choices"][0]["message"]["content"]
+                print(f"  GitHub Models {model}: {r.status_code} {r.text[:150]}")
+            except Exception as e:  # noqa: BLE001
+                print(f"  GitHub Models {model} failed: {e}")
+    return None
+
+
+def ask_json(prompt):
+    out = ask_llm(prompt)
+    if not out:
         return None
-    if not (os.environ.get("CLAUDE_CODE_OAUTH_TOKEN") or os.environ.get("ANTHROPIC_API_KEY")):
-        return None
-    prompt = (
-        "You write hooks for a YouTube Shorts channel that posts credited GTA 6 stream clips.\n"
-        f"Streamer: {name}\nTwitch clip title (written by a viewer): {clip_title}\n"
-        f"Transcript: {transcript[:1500]}\n\n"
-        + _audience_block(login) +
-        "Return ONLY JSON: {\"hook\": \"on-screen text, max 7 words, no emoji\", "
-        "\"title\": \"YouTube title under 80 chars that names the streamer and says what happened\"}. "
-        "The hook must make a viewer stop scrolling in the first second: a bold claim, a question, "
-        "or the stakes of the moment (e.g. 'He did NOT expect this cop'). Match the tone of what this "
-        "streamer's audience already watches. No story spoilers, no clickbait lies, no 'official'."
-    )
+    m = re.search(r"\{.*\}", out, re.S)
     try:
-        out = subprocess.run(
-            ["claude", "-p", prompt, "--output-format", "text"],
-            capture_output=True, text=True, timeout=180,
-        ).stdout
-        m = re.search(r"\{.*\}", out, re.S)
-        data = json.loads(m.group(0)) if m else None
-        if data and data.get("hook") and data.get("title"):
-            return {"hook": clean_title(data["hook"])[:60], "title": clean_title(data["title"])[:90]}
-    except Exception as e:  # noqa: BLE001 - optional step must never break a run
-        print(f"  claude hook skipped: {e}")
+        return json.loads(m.group(0)) if m else None
+    except ValueError:
+        return None
+
+
+TITLE_RULES = (
+    "Title rules (copied from the most-viewed GTA 6 streamer Shorts): start with the streamer's name, "
+    "say exactly what happens in this clip as a mini story (who did what, what went wrong), "
+    "Title Case, 45-75 characters, end with 1-2 emoji like 😭 💀 😂 🤣. Examples of the style: "
+    "'Kai Cenat Was Hopping Fences For His GTA 6 Trailer! 😭💀', "
+    "'NPC Did NOT Let YourRage Slide After He Kicked His Car in GTA 6 😂😭'. "
+    "Never use vague templates like 'can't believe what happened' or 'lost it'. "
+    "The on-screen hook is different from the title: max 6 words, a bold claim or question that makes "
+    "people stop scrolling, no emoji. No story spoilers, no lies, no 'official'."
+)
+
+
+def _claude_hook(name, clip_title, transcript, login=""):
+    """Hook + title written by a language model from what was actually said. dict or None."""
+    prompt = (
+        "You write hooks and titles for a YouTube Shorts channel that posts credited GTA 6 stream clips.\n"
+        f"Streamer: {name}\nClip title (written by a Twitch viewer, may be junk): {clip_title}\n"
+        f"What the streamer says in the clip (auto transcript, may be translated): {transcript[:1500]}\n\n"
+        + _audience_block(login) + TITLE_RULES + "\n"
+        'Return ONLY JSON: {"hook": "...", "title": "..."}'
+    )
+    data = ask_json(prompt)
+    if data and data.get("hook") and data.get("title"):
+        return {"hook": clean_title(data["hook"])[:60], "title": data["title"].strip()[:95]}
     return None
 
 

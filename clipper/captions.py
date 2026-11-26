@@ -84,6 +84,7 @@ LAYOUT_Y = {
     # (hook y, captions y, credit y)
     "blur": (390, 1330, 1790),
     "split": (700, 1480, 1850),
+    "fill": (330, 1300, 1800),
 }
 
 
