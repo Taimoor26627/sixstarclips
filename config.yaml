@@ -6,7 +6,7 @@ channel:
   handle: "@6_starclipsgta"
 
 # true = make and upload nothing (used while switching channels)
-paused: true
+paused: false
 
 game_name: "Grand Theft Auto VI"   # Twitch category to clip from
 
