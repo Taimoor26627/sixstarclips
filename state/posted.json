@@ -35,21 +35,16 @@
    "old_channel": true
   },
   "1698893120": {
-   "at": "2026-11-22T20:33:22.606698+00:00",
+   "at": "2026-11-26T09:35:08.767175+00:00",
    "login": "clix",
-   "views_at_pick": 2445,
-   "hook": "sssssssssssss",
-   "title": "Clix: Sssssssssssss in GTA 6",
-   "youtube_id": "0GkxYhkQY7Q",
+   "views_at_pick": 8234,
+   "hook": "\"What's going on?\"",
+   "title": "Clix: \"What's going on?\" in GTA 6 😂",
+   "youtube_id": "mIowhXfI1KI",
    "source": "https://www.twitch.tv/clix/clip/ConcernedDarkMagePeanutButterJellyTime-mNYVIXLMA54D52ZN",
-   "stats": {
-    "views": 5,
-    "likes": 0,
-    "comments": 0,
-    "privacy": "public"
-   },
-   "stats_at": "2026-11-26T08:36:53.919908+00:00",
-   "old_channel": true
+   "publish_at": "2026-11-27T12:00:00Z",
+   "campaign": true,
+   "alerted": false
   },
   "1860573091": {
    "at": "2026-11-22T20:54:42.973908+00:00",
@@ -434,6 +429,40 @@
    "publish_at": "2026-11-26T09:17:21Z",
    "campaign": false,
    "alerted": false
+  },
+  "combo_32bf7f17e5ad": {
+   "at": "2026-11-26T09:37:41.970311+00:00",
+   "login": "top3",
+   "views_at_pick": 197886,
+   "hook": "Kai Cenat's 3 craziest GTA 6 moments",
+   "title": "Kai Cenat's 3 Craziest GTA 6 Moments So Far 😭💀",
+   "youtube_id": "aG9YPNP4j4I",
+   "source": "https://www.twitch.tv/kaicenat/clip/MistyFastChickpeaBatChest-1l50Cnz_nbghKxmh",
+   "publish_at": "2026-11-27T16:00:00Z",
+   "campaign": true,
+   "alerted": false,
+   "parts": [
+    "395630095",
+    "3422080430",
+    "4188544786"
+   ]
+  },
+  "combo_2ae7322b15d8": {
+   "at": "2026-11-26T09:39:59.289323+00:00",
+   "login": "top3",
+   "views_at_pick": 105270,
+   "hook": "Lacy's 3 craziest GTA 6 moments",
+   "title": "Lacy's 3 Craziest GTA 6 Moments So Far 😭💀",
+   "youtube_id": "5Gdjzr7I0fc",
+   "source": "https://www.twitch.tv/lacy/clip/CredulousKawaiiTriangleFUNgineer-Zys54vtw1G4OmIkN",
+   "publish_at": "2026-11-27T20:00:00Z",
+   "campaign": true,
+   "alerted": false,
+   "parts": [
+    "4141049941",
+    "2915466825",
+    "834307869"
+   ]
   }
  }
 }
