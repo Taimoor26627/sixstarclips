@@ -79,6 +79,8 @@ jobs:
             python -m clipper learn || true
             python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
               ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+          elif [ "${{ contains(github.event.head_commit.message, '[stats]') }}" = "true" ]; then
+            python -m clipper learn --stats
           elif [ "${{ contains(github.event.head_commit.message, '[dry-run]') }}" = "true" ]; then
             python -m clipper run --batch --max-posts 3 --dry-run
           else

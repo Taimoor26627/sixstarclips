@@ -159,7 +159,8 @@ def cmd_learn(args, force=False):
         print("Learning skipped: MAKE_WEBHOOK_URL not set.")
         return None
     data = research.load_learn()
-    do_stats = force or research.due(data, "last_stats", rc.get("stats_every_hours", 44))
+    force_stats = force or getattr(args, "stats", False)
+    do_stats = force_stats or research.due(data, "last_stats", rc.get("stats_every_hours", 44))
     do_market = force or research.due(data, "last_market", 24 * rc.get("market_every_days", 10))
     if not (do_stats or do_market):
         print("Learning: data is fresh, nothing to fetch.")
@@ -539,7 +540,8 @@ def main():
     sub.add_parser("report")
     sub.add_parser("alerts")
     sub.add_parser("tick")
-    sub.add_parser("learn")
+    lp = sub.add_parser("learn")
+    lp.add_argument("--stats", action="store_true", help="re-read our views now")
     t = sub.add_parser("render-test")
     t.add_argument("video")
     t.add_argument("hook")
