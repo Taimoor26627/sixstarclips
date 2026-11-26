@@ -100,12 +100,19 @@ def ask_llm(prompt, timeout=120):
             try:
                 r = requests.post("https://models.github.ai/inference/chat/completions",
                                   headers={"Authorization": f"Bearer {token}",
+                                           "Accept": "application/vnd.github+json",
+                                           "X-GitHub-Api-Version": "2022-11-28",
                                            "Content-Type": "application/json"},
                                   json={"model": model, "temperature": 0.9,
                                         "messages": [{"role": "user", "content": prompt}]},
                                   timeout=timeout)
                 if r.status_code == 200:
-                    return r.json()["choices"][0]["message"]["content"]
+                    try:
+                        return r.json()["choices"][0]["message"]["content"]
+                    except ValueError:
+                        print(f"  GitHub Models {model}: unreadable answer: {r.headers.get('content-type')} "
+                              f"{r.text[:200]!r}")
+                        continue
                 print(f"  GitHub Models {model}: {r.status_code} {r.text[:150]}")
             except Exception as e:  # noqa: BLE001
                 print(f"  GitHub Models {model} failed: {e}")

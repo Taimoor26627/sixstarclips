@@ -22,6 +22,14 @@ selection:
   youtube_lookback_hours: 720      # YouTube: most-viewed GTA 6 streams of the last 30 days
   youtube_peak_weight: 40000       # how strongly YouTube "most replayed" peaks compete with Twitch clips
 
+concepts:
+  # Multi-clip Shorts mixed into each day's batch (the rest are single clips).
+  enabled: true
+  per_day: 2                       # how many of the day's Shorts are multi-clip
+  formats: [versus, ranking, top3] # versus = same moment, different streamers; ranking/top3 = countdowns
+  pool: 12                         # how many top clips to consider
+  max_seconds: 44
+
 research:
   # Learning loop (uses the Make scenario's read-only YouTube route, ~4 Make operations per call).
   stats_every_hours: 44            # re-read our Shorts' views about every 2 days (1 call)

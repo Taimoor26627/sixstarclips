@@ -42,7 +42,7 @@ def summary(md):
 
 
 def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam=None,
-               disclosure=None, language="en"):
+               disclosure=None, language="en", **ass_extra):
     """Captions + render. Returns (duration, transcript_text)."""
     _, _, dur, has_audio = render.probe(src)
     dur = min(dur, float(cfg.get("render", {}).get("max_seconds", 59)))
@@ -55,7 +55,7 @@ def make_short(src, workdir, out_path, hook, credit, cfg, layout="blur", facecam
     ass = captions.build_ass(
         words, hook, credit, dur, layout=layout if (facecam or layout != "split") else "blur",
         censor_words=cfg.get("captions", {}).get("censor_profanity", True),
-        disclosure=disclosure,
+        disclosure=disclosure, **ass_extra,
     )
     ass_path = os.path.join(workdir, "subs.ass")
     with open(ass_path, "w", encoding="utf-8") as f:
@@ -381,45 +381,82 @@ def cmd_run(args):
     print(f"{len(candidates)} candidate clips from {len(streamers)} streamers; skipped: {reasons}")
 
     queued = queued_clips(cfg, state)
-    chosen = queued[:n] + select.pick([c for c in candidates if c["id"] not in {q["id"] for q in queued}],
-                                      max(0, n - len(queued)), now)
-    if not chosen:
+    rest = [c for c in candidates if c["id"] not in {q["id"] for q in queued}]
+    combos, poolroot = [], tempfile.mkdtemp(prefix="pool_")
+    ccfg = cfg.get("concepts", {})
+    if args.batch and ccfg.get("enabled", True):
+        want_c = min(int(ccfg.get("per_day", 2)), max(0, n - len(queued) - 1))
+        if want_c:
+            from . import concepts
+            ranked = sorted(rest, key=lambda c: select.score(c, now), reverse=True)[:int(ccfg.get("pool", 12))]
+            print(f"\nPlanning {want_c} multi-clip Shorts from {len(ranked)} clips...")
+            model = cfg["captions"].get("model", "small")
+            pool = concepts.prepare(ranked, lambda p, lang: captions.transcribe(p, model, lang), poolroot)
+            try:
+                combos = concepts.plan(pool, cfg, state, want_c)
+            except Exception:  # noqa: BLE001
+                traceback.print_exc()
+            used = {c["id"] for g in combos for c in g["clips"]}
+            rest = [c for c in rest if c["id"] not in used]
+            for g in combos:
+                print(f"  concept: {g['type']}: {g['title']}")
+    singles = queued[:n] + select.pick(rest, max(0, n - len(queued) - len(combos)), now)
+    items = [("single", c) for c in singles]
+    for k, g in enumerate(combos):    # spread the multi-clip Shorts through the day
+        items.insert(min(len(items), 1 + 2 * k), ("combo", g))
+    if not items:
         summary("No new clips met the rules this run.")
         return
 
     os.makedirs(OUT_DIR, exist_ok=True)
     pub = cfg["publish"]
     rows, done = [], []
-    slots = next_slots(cfg, state, len(chosen)) if args.batch else []
-    for c in chosen:
-        s = c["_streamer"]
-        lang = s.get("language", "en")
-        credit = select.credit_text(s)
-        layout = "split" if s.get("facecam") else cfg.get("render", {}).get("layout", "fill")
-        disclosure = "#ad" if s.get("campaign") else None
-        print(f"\n> {s['name']}: '{c['title'][:70]}' ({c['view_count']:,} views, "
-              f"score {select.score(c, now):,.0f}) {c['url']}")
+    slots = next_slots(cfg, state, len(items)) if args.batch else []
+    for kind, c in items:
+        if kind == "combo":
+            g = c
+            g["campaign"] = g["type"] == "top3" and bool(g["clips"][0]["_streamer"].get("campaign"))
+            s = {"name": " + ".join(dict.fromkeys(x["_streamer"]["name"] for x in g["clips"])),
+                 "login": g["type"], "campaign": g["campaign"]}
+            print(f"\n> {g['type'].upper()}: {g['title']}")
+        else:
+            s = c["_streamer"]
+            lang = s.get("language", "en")
+            credit = select.credit_text(s)
+            layout = "split" if s.get("facecam") else cfg.get("render", {}).get("layout", "fill")
+            disclosure = "#ad" if s.get("campaign") else None
+            print(f"\n> {s['name']}: '{c['title'][:70]}' ({c['view_count']:,} views, "
+                  f"score {select.score(c, now):,.0f}) {c['url']}")
         workdir = tempfile.mkdtemp(prefix="clip_")
         try:
-            if "_yt" in c:
-                from . import youtube_source
-                src = youtube_source.fetch(c, workdir)
+            if kind == "combo":
+                from . import concepts
+                out_path = os.path.join(OUT_DIR, f"{g['id']}.mp4")
+                dur = concepts.render_concept(g, cfg, out_path, workdir, make_short)
+                hook, title = g["hook"], g["title"]
+                desc, tags = concepts.describe(g, cfg)
+                c = {"id": g["id"], "url": g["clips"][0]["url"], "title": title,
+                     "view_count": sum(x["view_count"] for x in g["clips"])}
             else:
-                src = render.download(c["url"], workdir)
-            out_path = os.path.join(OUT_DIR, f"{s['login']}_{c['id'][-24:]}.mp4")
-            # Draft hook from the clip title; refine with transcript if Claude is on.
-            recent = set() if c.get("_queued") else st.recent_openers(state)
-            hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}}, recent)
-            dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
-                                         facecam=s.get("facecam"), disclosure=disclosure, language=lang)
-            if not c.get("_queued"):
-                # Now that we know what was said: better hook (Claude if set up, else the best quote).
-                h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
-                if h2 != hook:
-                    hook, title = h2, t2
-                    make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
-                               facecam=s.get("facecam"), disclosure=disclosure, language=lang)
-            desc, tags = select.describe(c, s, cfg)
+                if "_yt" in c:
+                    from . import youtube_source
+                    src = youtube_source.fetch(c, workdir)
+                else:
+                    src = render.download(c["url"], workdir)
+                out_path = os.path.join(OUT_DIR, f"{s['login']}_{c['id'][-24:]}.mp4")
+                # Draft hook from the clip title; refine with transcript if Claude is on.
+                recent = set() if c.get("_queued") else st.recent_openers(state)
+                hook, title = select.make_hook(c, s, {**cfg, "hooks": {**cfg["hooks"], "use_claude": False}}, recent)
+                dur, transcript = make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
+                                             facecam=s.get("facecam"), disclosure=disclosure, language=lang)
+                if not c.get("_queued"):
+                    # Now that we know what was said: better hook (Claude if set up, else the best quote).
+                    h2, t2 = select.make_hook(c, s, cfg, st.recent_openers(state), transcript)
+                    if h2 != hook:
+                        hook, title = h2, t2
+                        make_short(src, workdir, out_path, hook, credit, cfg, layout=layout,
+                                   facecam=s.get("facecam"), disclosure=disclosure, language=lang)
+                desc, tags = select.describe(c, s, cfg)
 
             publish_at = slots.pop(0) if slots else immediate_time()
             yt_id = None
@@ -438,6 +475,8 @@ def cmd_run(args):
                     yt_id = make_upload(small, title, desc, tags, publish_at)
                 print(f"  scheduled for {local_label(publish_at, cfg)}: {yt_id}")
                 st.record(state, c, s["login"], hook, title, yt_id, publish_at, bool(s.get("campaign")))
+                if kind == "combo":
+                    state["posted"][c["id"]]["parts"] = [x["id"] for x in g["clips"]]
                 st.save(state)
             done.append({"s": s, "title": title, "desc": desc, "yt_id": yt_id, "publish_at": publish_at,
                          "out": out_path})
@@ -445,10 +484,11 @@ def cmd_run(args):
                         f"{('https://youtube.com/shorts/' + yt_id) if yt_id and yt_id != 'QUEUED' else (yt_id or 'rendered')} |")
         except Exception:  # noqa: BLE001 - one bad clip must not stop the rest
             traceback.print_exc()
-            rows.append(f"| - | {s['name']} | FAILED: {c['url']} | - | - |")
+            rows.append(f"| - | {s['name']} | FAILED: {c.get('url') or c.get('title')} | - | - |")
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
 
+    shutil.rmtree(poolroot, ignore_errors=True)
     if done and pub.get("telegram") and not args.dry_run and os.environ.get("TELEGRAM_BOT_TOKEN"):
         send_plan(done, cfg)
     summary("| Goes live | Streamer | Title | Length | Video |\n| --- | --- | --- | --- | --- |\n"

@@ -89,7 +89,9 @@ LAYOUT_Y = {
 
 
 def build_ass(words, hook, credit, duration, layout="blur", censor_words=True,
-              disclosure=None, font="Anton"):
+              disclosure=None, font="Anton", label=None, hook_until=None, outro=None):
+    """hook: big boxed text at the top. With label, the hook shows until hook_until and the
+    label (e.g. '#2 KAI CENAT') takes its place after. outro: text for the last 3 seconds."""
     hook_y, cap_y, credit_y = LAYOUT_Y.get(layout, LAYOUT_Y["blur"])
     header = f"""[Script Info]
 ScriptType: v4.00+
@@ -110,8 +112,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     end = ts(duration)
     ev = []
-    if hook:
-        ev.append(f"Dialogue: 2,{ts(0)},{end},Hook,,0,0,0,,{{\\pos(540,{hook_y})}}{esc(hook.upper())}")
+    switch = min(hook_until, duration) if (label and hook and hook_until) else (duration if not label else 0)
+    if hook and switch > 0:
+        ev.append(f"Dialogue: 2,{ts(0)},{ts(switch)},Hook,,0,0,0,,{{\\pos(540,{hook_y})}}{esc(hook.upper())}")
+    if label and switch < duration:
+        ev.append(f"Dialogue: 2,{ts(switch)},{end},Hook,,0,0,0,,{{\\pos(540,{hook_y})}}{esc(label.upper())}")
+    if outro:
+        ev.append(f"Dialogue: 4,{ts(max(0, duration - 3))},{end},Hook,,0,0,0,,"
+                  f"{{\\pos(540,960)\\fscx115\\fscy115}}{esc(outro.upper())}")
     if credit:
         ev.append(f"Dialogue: 1,{ts(0)},{end},Credit,,0,0,0,,{{\\pos(540,{credit_y})\\alpha&H30&}}{esc(credit)}")
     if disclosure:
