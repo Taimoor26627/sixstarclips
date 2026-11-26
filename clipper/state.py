@@ -23,7 +23,8 @@ def save(state):
 
 def posted_today(state, login):
     since = (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()
-    return sum(1 for v in state["posted"].values() if v.get("login") == login and v.get("at", "") >= since)
+    return sum(1 for v in state["posted"].values()
+               if v.get("login") == login and v.get("at", "") >= since and not v.get("old_channel"))
 
 
 def recent_openers(state, days=7):
@@ -32,7 +33,8 @@ def recent_openers(state, days=7):
 
 
 def taken_slots(state):
-    return {v["publish_at"] for v in state["posted"].values() if v.get("publish_at")}
+    return {v["publish_at"] for v in state["posted"].values()
+            if v.get("publish_at") and not v.get("old_channel")}
 
 
 def record(state, clip, login, hook, title, youtube_id=None, publish_at=None, campaign=False):

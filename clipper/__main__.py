@@ -129,7 +129,7 @@ def cmd_alerts(args):
     changed = False
     for v in state["posted"].values():
         pa = v.get("publish_at")
-        if not pa or v.get("alerted") or not v.get("youtube_id") or v["youtube_id"] == "QUEUED":
+        if not pa or v.get("alerted") or v.get("old_channel") or not v.get("youtube_id") or v["youtube_id"] == "QUEUED":
             continue
         t = select.parse_time(pa)
         if t <= now <= t + timedelta(hours=6):
@@ -204,7 +204,7 @@ def cmd_tick(args):
     state = st.load()
     now = select.now_utc()
     ahead = sum(1 for v in state["posted"].values()
-                if v.get("publish_at") and select.parse_time(v["publish_at"]) > now)
+                if v.get("publish_at") and not v.get("old_channel") and select.parse_time(v["publish_at"]) > now)
     want = cfg.get("schedule", {}).get("per_day", 6)
     if ahead >= want:
         print(f"{ahead} Shorts already scheduled ahead; nothing to make.")
@@ -357,7 +357,7 @@ def cmd_run(args):
 
     def usable(c):
         why = None
-        if c["id"] in state["posted"]:
+        if c["id"] in state["posted"] and not state["posted"][c["id"]].get("old_channel"):
             why = "already posted"
         elif c["view_count"] < sel["min_views"]:
             why = "too few views"

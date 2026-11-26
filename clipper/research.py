@@ -73,7 +73,7 @@ def _videos(ids):
 
 def our_stats(state):
     ids = [v["youtube_id"] for v in state["posted"].values()
-           if v.get("youtube_id") and v["youtube_id"] != "QUEUED"]
+           if v.get("youtube_id") and v["youtube_id"] != "QUEUED" and not v.get("old_channel")]
     stats = _videos(ids)
     now = now_utc().isoformat()
     for v in state["posted"].values():
@@ -149,7 +149,7 @@ def learn(cfg, state, do_market=False):
     ours = {}
     for v in state["posted"].values():
         live_at = v.get("publish_at") or v.get("at")
-        if v.get("stats") and live_at and parse_time(live_at) <= cutoff:
+        if v.get("stats") and not v.get("old_channel") and live_at and parse_time(live_at) <= cutoff:
             ours.setdefault(v["login"], []).append(v["stats"]["views"])
 
     demand = {k: d.get("median_views", 0) for k, d in data["streamers"].items()}
@@ -177,7 +177,7 @@ def learn(cfg, state, do_market=False):
     usable = [s for s in enabled if s.get("platform", "twitch") == "twitch" or youtube_source.available()]
     ranked = sorted(usable, key=lambda s: data["streamers"][s["login"]]["weight"], reverse=True)
     if all_ours:
-        best = max((v for v in state["posted"].values() if v.get("stats")), key=lambda v: v["stats"]["views"])
+        best = max((v for v in state["posted"].values() if v.get("stats") and not v.get("old_channel")), key=lambda v: v["stats"]["views"])
         lines.append(f"Your Shorts so far: {len(all_ours)} live 24h+, average {int(our_avg):,} views. "
                      f"Best: \"{best['title']}\" ({best['stats']['views']:,}).")
     lines.append("Priority now: " + ", ".join(f"{s['name']} x{data['streamers'][s['login']]['weight']}"
@@ -190,7 +190,7 @@ def learn(cfg, state, do_market=False):
 
 def write_reports(cfg, state, data):
     os.makedirs("reports", exist_ok=True)
-    rows = sorted((v for v in state["posted"].values() if v.get("stats")),
+    rows = sorted((v for v in state["posted"].values() if v.get("stats") and not v.get("old_channel")),
                   key=lambda v: v["stats"]["views"], reverse=True)
     perf = ["# Our Shorts performance", "", "| Views | Likes | Streamer | Title | Video |",
             "| --- | --- | --- | --- | --- |"]
