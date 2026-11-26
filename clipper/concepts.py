@@ -69,12 +69,15 @@ def _llm_plan(pool, want, kinds):
         "- ranking: 3 clips from different streamers sharing one theme (e.g. biggest rage, funniest NPC), "
         "listed weakest first, best last.\n"
         "- top3: 3 clips of the SAME streamer, weakest first, best last.\n"
-        "Only group clips that really fit together; fewer good Shorts beat forced ones. Each clip once.\n"
+        "Only group clips that really fit together; fewer good Shorts beat forced ones. Each clip once. "
+        "A versus MUST show the same thing happening to each streamer (same scene, mission, character or "
+        "type of event); two unrelated moments side by side is NOT a versus - skip it. Give 'shared' = "
+        "the one thing all clips in a versus or ranking have in common.\n"
         + select.TITLE_RULES.replace("start with the streamer's name, ", "name the streamers, ") + "\n"
         "For each Short also give 'labels': one short on-screen label per clip, in order "
         "(versus: the streamer's name; ranking/top3: '#3 NAME', '#2 NAME', '#1 NAME').\n"
         'Return ONLY JSON: {"shorts": [{"type": "versus", "clips": [0, 4], "hook": "...", "title": "...", '
-        '"labels": ["...", "..."]}]}'
+        '"shared": "...", "labels": ["...", "..."]}]}'
     )
     data = select.ask_json(prompt)
     out = []
@@ -91,6 +94,8 @@ def _llm_plan(pool, want, kinds):
         if kind in ("versus", "ranking") and len(set(names)) != len(names):
             continue
         if kind == "top3" and len(set(names)) != 1:
+            continue
+        if kind in ("versus", "ranking") and len((sh.get("shared") or "").strip()) < 4:
             continue
         labels = sh.get("labels") or []
         if len(labels) != len(clips):
