@@ -183,6 +183,19 @@ def cmd_learn(args, force=False):
     return text
 
 
+def cmd_whoami(args):
+    """Which YouTube channel the Make connection uploads to."""
+    from . import research
+
+    data = research.api("/v3/channels?part=snippet,statistics&mine=true")
+    for ch in data.get("items", []):
+        sn, stt = ch.get("snippet", {}), ch.get("statistics", {})
+        summary(f"Connected channel: {sn.get('title')} ({sn.get('customUrl')}) id {ch.get('id')}, "
+                f"{stt.get('subscriberCount')} subs, {stt.get('videoCount')} videos")
+    if not data.get("items"):
+        summary(f"No channel found: {str(data)[:300]}")
+
+
 def cmd_tick(args):
     """Scheduled run: send live alerts, learn from results, then top the schedule up to a full day."""
     cmd_alerts(args)
@@ -543,6 +556,7 @@ def main():
     sub.add_parser("report")
     sub.add_parser("alerts")
     sub.add_parser("tick")
+    sub.add_parser("whoami")
     lp = sub.add_parser("learn")
     lp.add_argument("--stats", action="store_true", help="re-read our views now")
     t = sub.add_parser("render-test")
@@ -551,7 +565,7 @@ def main():
     t.add_argument("--facecam", help="x,y,w,h in 1920x1080 source")
     args = p.parse_args()
     {"run": cmd_run, "report": cmd_report, "alerts": cmd_alerts, "tick": cmd_tick,
-     "learn": lambda a: cmd_learn(a), "render-test": cmd_render_test}[args.cmd](args)
+     "learn": lambda a: cmd_learn(a), "whoami": cmd_whoami, "render-test": cmd_render_test}[args.cmd](args)
 
 
 if __name__ == "__main__":
