@@ -286,7 +286,7 @@
    "source": "https://www.twitch.tv/yourragegaming/clip/FunnyPuzzledPieDoubleRainbow-79lZizIGM0W5Ehdu",
    "publish_at": "2026-11-25T16:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -305,7 +305,7 @@
    "source": "https://www.twitch.tv/kaicenat/clip/ExquisiteInnocentGaragePoooound-mLDj-ot7Fg9JJjLA",
    "publish_at": "2026-11-25T20:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "2058409627": {
    "at": "2026-11-25T00:37:58.523762+00:00",
@@ -317,7 +317,7 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/ViscousStormySquirrelDancingBanana-2gkXgAHz-CwpC3GO",
    "publish_at": "2026-11-26T00:00:00Z",
    "campaign": false,
-   "alerted": false
+   "alerted": true
   },
   "4188544786": {
    "at": "2026-11-25T14:12:31.488382+00:00",
@@ -352,6 +352,42 @@
    "youtube_id": "ppnbkDUHzIM",
    "source": "https://www.twitch.tv/asianjeff/clip/BlatantExquisiteMonitorGrammarKing-KZJb61NKnli7x9PO",
    "publish_at": "2026-11-26T12:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "2678721533": {
+   "at": "2026-11-26T00:13:30.999934+00:00",
+   "login": "ishowspeed",
+   "views_at_pick": 179656,
+   "hook": "IShowSpeed's worst GTA 6 moment yet",
+   "title": "IShowSpeed's worst GTA 6 moment yet 😂",
+   "youtube_id": "u6qwhZRH3ZU",
+   "source": "https://www.twitch.tv/ishowspeed/clip/LightEvilQueleaLitFam-ues9L-NlLxKDRclp",
+   "publish_at": "2026-11-26T16:00:00Z",
+   "campaign": false,
+   "alerted": false
+  },
+  "1122791762": {
+   "at": "2026-11-26T00:16:56.020146+00:00",
+   "login": "clix",
+   "views_at_pick": 69283,
+   "hook": "nobody warned Clix about this",
+   "title": "Nobody warned Clix about this in GTA 6 😭",
+   "youtube_id": "WU6jPAQh7eo",
+   "source": "https://www.twitch.tv/clix/clip/UnusualMoistSharkBIRB-Wlz2wmgaTOQAniKu",
+   "publish_at": "2026-11-26T20:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "834307869": {
+   "at": "2026-11-26T00:19:37.287565+00:00",
+   "login": "lacy",
+   "views_at_pick": 43308,
+   "hook": "Lacy vs the GTA 6 police",
+   "title": "Lacy vs the GTA 6 police 💀",
+   "youtube_id": "gUcZKY0qxIU",
+   "source": "https://www.twitch.tv/lacy/clip/DullCalmGullUWot-yyTc1tkQ0S4Gv-5E",
+   "publish_at": "2026-11-27T00:00:00Z",
    "campaign": true,
    "alerted": false
   }
