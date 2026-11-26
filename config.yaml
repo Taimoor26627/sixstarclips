@@ -2,8 +2,11 @@
 # Edit this file on GitHub (pencil icon) to change what the bot does.
 
 channel:
-  name: "Six Star Clips"
-  handle: "@SixStarClipsGG1"
+  name: "6 Star Clips GTA"
+  handle: "@6_starclipsgta"
+
+# true = make and upload nothing (used while switching channels)
+paused: true
 
 game_name: "Grand Theft Auto VI"   # Twitch category to clip from
 

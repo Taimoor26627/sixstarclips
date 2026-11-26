@@ -328,6 +328,9 @@ def queued_clips(cfg, state):
 
 def cmd_run(args):
     cfg = load_cfg(args.config)
+    if cfg.get("paused") and not args.dry_run:
+        summary("Paused (config.yaml 'paused: true'): no clips made or uploaded.")
+        return
     select.HALF_LIFE_H = float(cfg["selection"].get("half_life_hours", 168))
     state = st.load()
     streamers = [s for s in cfg["streamers"] if s.get("enabled")]
