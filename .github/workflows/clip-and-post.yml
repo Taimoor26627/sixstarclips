@@ -81,11 +81,8 @@ jobs:
             python -m clipper learn || true
             python -m clipper run --batch --max-posts "${{ github.event.inputs.count || '6' }}" \
               ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
-          elif [ "${{ contains(github.event.head_commit.message, '[models]') }}" = "true" ]; then
-            curl -sS -i -X POST https://models.github.ai/inference/chat/completions \
-              -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "X-GitHub-Api-Version: 2022-11-28" -H "Content-Type: application/json" \
-              -d '{"model":"openai/gpt-4.1-mini","messages":[{"role":"user","content":"Say hi"}]}' | head -c 1500
+          elif [ "${{ contains(github.event.head_commit.message, '[batch]') }}" = "true" ]; then
+            python -m clipper run --batch --max-posts 3
           elif [ "${{ contains(github.event.head_commit.message, '[now]') }}" = "true" ]; then
             python -m clipper run --max-posts 1
           elif [ "${{ contains(github.event.head_commit.message, '[whoami]') }}" = "true" ]; then
