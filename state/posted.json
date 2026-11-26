@@ -308,7 +308,7 @@
    "source": "https://www.twitch.tv/kaicenat/clip/ExquisiteInnocentGaragePoooound-mLDj-ot7Fg9JJjLA",
    "publish_at": "2026-11-26T12:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "2058409627": {
    "at": "2026-11-26T09:07:39.724937+00:00",
@@ -428,7 +428,7 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/LongHeartlessWhaleMau5-B9NBfqUvbpHRrgP4",
    "publish_at": "2026-11-26T09:17:21Z",
    "campaign": false,
-   "alerted": false
+   "alerted": true
   },
   "combo_32bf7f17e5ad": {
    "at": "2026-11-26T09:37:41.970311+00:00",
