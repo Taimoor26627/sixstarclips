@@ -320,7 +320,7 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/ViscousStormySquirrelDancingBanana-2gkXgAHz-CwpC3GO",
    "publish_at": "2026-11-26T16:00:00Z",
    "campaign": false,
-   "alerted": false
+   "alerted": true
   },
   "4188544786": {
    "at": "2026-11-25T14:12:31.488382+00:00",
@@ -352,7 +352,7 @@
    "source": "https://www.twitch.tv/lacy/clip/SlickStylishBeaverStrawBeary-ljpqadoCXEhYwJx5",
    "publish_at": "2026-11-26T20:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "3080134111": {
    "at": "2026-11-26T09:15:52.395565+00:00",
@@ -396,7 +396,7 @@
    "source": "https://www.twitch.tv/clix/clip/UnusualMoistSharkBIRB-Wlz2wmgaTOQAniKu",
    "publish_at": "2026-11-27T00:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "834307869": {
    "at": "2026-11-26T00:19:37.287565+00:00",
