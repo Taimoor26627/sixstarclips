@@ -44,7 +44,7 @@
    "source": "https://www.twitch.tv/clix/clip/ConcernedDarkMagePeanutButterJellyTime-mNYVIXLMA54D52ZN",
    "publish_at": "2026-11-27T12:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "1860573091": {
    "at": "2026-11-22T20:54:42.973908+00:00",
@@ -116,7 +116,7 @@
    "source": "https://www.twitch.tv/yourragegaming/clip/JazzyRelatedPoxStrawBeary-PnTV6_GAv5gGNkci",
    "publish_at": "2026-11-27T04:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "4276206929": {
    "at": "2026-11-22T21:00:42.681185+00:00",
@@ -323,24 +323,16 @@
    "alerted": true
   },
   "4188544786": {
-   "at": "2026-11-25T14:12:31.488382+00:00",
+   "at": "2026-11-27T13:47:48.242493+00:00",
    "login": "kaicenat",
-   "views_at_pick": 87452,
-   "hook": "kai cenat argues with his new girlfriend",
-   "title": "Kai cenat argues with his new girlfriend in GTA 6 😭",
-   "youtube_id": "yaSQKEvWsLo",
+   "views_at_pick": 89104,
+   "hook": "\"No, no, I don't!\"",
+   "title": "Kai Cenat: \"No, no, I don't!\" in GTA 6 😂",
+   "youtube_id": "EkqVfdfTzAo",
    "source": "https://www.twitch.tv/kaicenat/clip/UnusualConsiderateLionGingerPower-oJF7Ao2MX9omrH0x",
-   "publish_at": "2026-11-26T04:00:00Z",
+   "publish_at": "2026-11-28T00:00:00Z",
    "campaign": true,
-   "alerted": false,
-   "stats": {
-    "views": 2,
-    "likes": 0,
-    "comments": 0,
-    "privacy": "public"
-   },
-   "stats_at": "2026-11-26T08:36:53.919908+00:00",
-   "old_channel": true
+   "alerted": false
   },
   "1827983684": {
    "at": "2026-11-26T09:08:12.133701+00:00",
@@ -364,7 +356,7 @@
    "source": "https://www.twitch.tv/asianjeff/clip/BlatantExquisiteMonitorGrammarKing-KZJb61NKnli7x9PO",
    "publish_at": "2026-11-27T08:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true
   },
   "2678721533": {
    "at": "2026-11-26T00:13:30.999934+00:00",
@@ -399,24 +391,16 @@
    "alerted": true
   },
   "834307869": {
-   "at": "2026-11-26T00:19:37.287565+00:00",
+   "at": "2026-11-27T13:52:22.535545+00:00",
    "login": "lacy",
-   "views_at_pick": 43308,
-   "hook": "Lacy vs the GTA 6 police",
-   "title": "Lacy vs the GTA 6 police 💀",
-   "youtube_id": "gUcZKY0qxIU",
+   "views_at_pick": 44310,
+   "hook": "Lacy completely lost it in GTA 6",
+   "title": "Lacy completely lost it in GTA 6 😂",
+   "youtube_id": "xiqosQtqB50",
    "source": "https://www.twitch.tv/lacy/clip/DullCalmGullUWot-yyTc1tkQ0S4Gv-5E",
-   "publish_at": "2026-11-27T00:00:00Z",
+   "publish_at": "2026-11-28T08:00:00Z",
    "campaign": true,
-   "alerted": false,
-   "stats": {
-    "views": 0,
-    "likes": 0,
-    "comments": 0,
-    "privacy": "private"
-   },
-   "stats_at": "2026-11-26T08:36:53.919908+00:00",
-   "old_channel": true
+   "alerted": false
   },
   "1750599011": {
    "at": "2026-11-26T09:18:25.816442+00:00",
@@ -463,6 +447,35 @@
     "2915466825",
     "834307869"
    ]
+  },
+  "combo_0d5ddc12ec16": {
+   "at": "2026-11-27T13:50:44.637377+00:00",
+   "login": "top3",
+   "views_at_pick": 358520,
+   "hook": "IShowSpeed's 3 craziest GTA 6 moments",
+   "title": "IShowSpeed's 3 Craziest GTA 6 Moments So Far 😭💀",
+   "youtube_id": "aUJv9RRAcPI",
+   "source": "https://www.twitch.tv/ishowspeed/clip/BombasticSpookyAlpacaBibleThump-Ro8z9XgpJAAF_WGU",
+   "publish_at": "2026-11-28T04:00:00Z",
+   "campaign": false,
+   "alerted": false,
+   "parts": [
+    "2393476211",
+    "2554501966",
+    "2678721533"
+   ]
+  },
+  "3609102817": {
+   "at": "2026-11-27T13:54:57.844964+00:00",
+   "login": "clix",
+   "views_at_pick": 7463,
+   "hook": "Clix can't believe what just happened",
+   "title": "Clix can't believe what just happened in GTA 6 💀",
+   "youtube_id": "MfapaiM5FVY",
+   "source": "https://www.twitch.tv/clix/clip/ExcitedAnimatedFennelCharlietheUnicorn-QA5ruBT2wWdQcrOM",
+   "publish_at": "2026-11-28T12:00:00Z",
+   "campaign": true,
+   "alerted": false
   }
  }
 }
