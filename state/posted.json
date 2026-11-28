@@ -417,7 +417,7 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/LightEvilQueleaLitFam-ues9L-NlLxKDRclp",
    "publish_at": "2026-11-28T16:00:00Z",
    "campaign": false,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -455,7 +455,7 @@
    "source": "https://www.twitch.tv/lacy/clip/DullCalmGullUWot-yyTc1tkQ0S4Gv-5E",
    "publish_at": "2026-11-28T08:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -565,7 +565,7 @@
    "source": "https://www.twitch.tv/clix/clip/ExcitedAnimatedFennelCharlietheUnicorn-QA5ruBT2wWdQcrOM",
    "publish_at": "2026-11-28T12:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "stats": {
     "views": 0,
     "likes": 0,
@@ -619,6 +619,51 @@
    "parts": [
     "2026292110",
     "1749979550"
+   ]
+  },
+  "2915466825": {
+   "at": "2026-11-28T16:51:23.910583+00:00",
+   "login": "lacy",
+   "views_at_pick": 44583,
+   "hook": "whats he doing",
+   "title": "Lacy: Whats he doing in GTA 6 🤣",
+   "youtube_id": "whQESF9VHbw",
+   "source": "https://www.twitch.tv/lacy/clip/CharmingAverageLampRiPepperonis-bxwarySi-LHfOrIf",
+   "publish_at": "2026-11-29T08:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "combo_845162a55812": {
+   "at": "2026-11-28T16:53:58.548096+00:00",
+   "login": "versus",
+   "views_at_pick": 5927,
+   "hook": "2 streamers vs NPCs",
+   "title": "Clix vs YourRAGE: Who Handled Npcs Better in GTA 6? 😭",
+   "youtube_id": "rsXGmhjFbxI",
+   "source": "https://www.twitch.tv/clix/clip/AmusedSpikyMeerkatBigBrother-7FMWQabNRJ3gubYw",
+   "publish_at": "2026-11-29T12:00:00Z",
+   "campaign": false,
+   "alerted": false,
+   "parts": [
+    "1749979550",
+    "2089300641"
+   ]
+  },
+  "combo_511cda4a8293": {
+   "at": "2026-11-28T16:56:44.978794+00:00",
+   "login": "top3",
+   "views_at_pick": 177040,
+   "hook": "Kai Cenat's 3 craziest GTA 6 moments",
+   "title": "Kai Cenat's 3 Craziest GTA 6 Moments So Far 😭💀",
+   "youtube_id": "RRB50cVvD18",
+   "source": "https://www.twitch.tv/kaicenat/clip/DarlingPreciousKoupreyPrimeMe-m1DN36ODehi9lEZX",
+   "publish_at": "2026-11-29T16:00:00Z",
+   "campaign": true,
+   "alerted": false,
+   "parts": [
+    "602736657",
+    "865842615",
+    "3422080430"
    ]
   }
  }
