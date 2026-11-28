@@ -2,27 +2,19 @@
 
 | Views | Likes | Streamer | Title | Video |
 | --- | --- | --- | --- | --- |
-| 9 | 0 | lacy | Lacy's worst GTA 6 moment yet | https://youtube.com/shorts/yIiVkoT15Qc |
-| 5 | 0 | clix | Clix: Sssssssssssss in GTA 6 | https://youtube.com/shorts/0GkxYhkQY7Q |
-| 4 | 0 | kaicenat | Kai Cenat broke GTA 6 | https://youtube.com/shorts/GrvzEI6T1qc |
-| 3 | 0 | kaicenat | Kai got motion in GTA 6 | Kai Cenat | https://youtube.com/shorts/-IVZoLwjYg8 |
-| 3 | 0 | lacy | Lacy can't believe what just happened in GTA 6 | https://youtube.com/shorts/wEJzFWRaSug |
-| 3 | 0 | ishowspeed | IShowSpeed completely lost it in GTA 6 | https://youtube.com/shorts/s9tDHuuczoQ |
-| 2 | 0 | lacy | Chat saw it before Lacy did in GTA 6 | https://youtube.com/shorts/bCYBJeRBf_c |
-| 2 | 0 | kaicenat | Kai cenat when you up in GTA 6 | https://youtube.com/shorts/prTN4QoYJAA |
-| 2 | 0 | ishowspeed | IShowSpeed: Gyatt omg that crazy in GTA 6 😭💀 | https://youtube.com/shorts/IZbcD7dxDp8 |
-| 2 | 0 | kaicenat | Kai cenat argues with his new girlfriend in GTA 6 😭 | https://youtube.com/shorts/yaSQKEvWsLo |
-| 2 | 0 | lacy | Nobody warned Lacy about this in GTA 6 💀 | https://youtube.com/shorts/dYGeHzCzZRI |
-| 1 | 0 | clix | This is why Clix is banned from Leonida in GTA 6 | https://youtube.com/shorts/UEUvMyGGOMw |
-| 1 | 0 | yourragegaming | YourRAGE can't believe what just happened in GTA 6 | https://youtube.com/shorts/36UCzMlGnTk |
-| 1 | 0 | lacy | Lacy was NOT ready for this in GTA 6 | https://youtube.com/shorts/8g9hV34Hl5g |
-| 1 | 0 | asianjeff | AsianJeff: "How do I uncrouch again?" in GTA 6 🤣 | https://youtube.com/shorts/ppnbkDUHzIM |
-| 0 | 0 | ishowspeed | IShowSpeed: Speed finds ALIEN in gta | https://youtube.com/shorts/s7R-_7jn8RI |
-| 0 | 0 | clix | Clix's worst GTA 6 moment yet | https://youtube.com/shorts/dD9rmiwa68w |
-| 0 | 0 | yourragegaming | Chat saw it before YourRAGE did in GTA 6 | https://youtube.com/shorts/o4ME6UnU_CY |
-| 0 | 0 | clix | Clix completely lost it in GTA 6 | https://youtube.com/shorts/7MDHZS2erNE |
-| 0 | 0 | yourragegaming | YourRAGE's worst GTA 6 moment yet | https://youtube.com/shorts/GDj0Seq6VCs |
-| 0 | 0 | kaicenat | Nobody warned Kai Cenat about this in GTA 6 😭💀 | https://youtube.com/shorts/g2GskgL62mI |
-| 0 | 0 | ishowspeed | IShowSpeed's worst GTA 6 moment yet 😂 | https://youtube.com/shorts/u6qwhZRH3ZU |
-| 0 | 0 | clix | Nobody warned Clix about this in GTA 6 😭 | https://youtube.com/shorts/WU6jPAQh7eo |
-| 0 | 0 | lacy | Lacy vs the GTA 6 police 💀 | https://youtube.com/shorts/gUcZKY0qxIU |
+| 3 | 0 | kaicenat | Kai Cenat completely lost it in GTA 6 😭💀 | https://youtube.com/shorts/Uxls4gRzo10 |
+| 2 | 0 | ishowspeed | Chat saw it before IShowSpeed did in GTA 6 💀 | https://youtube.com/shorts/5FzUOWknZ0M |
+| 0 | 0 | clix | Clix: "What's going on?" in GTA 6 😂 | https://youtube.com/shorts/mIowhXfI1KI |
+| 0 | 0 | yourragegaming | YourRAGE broke GTA 6 😂 | https://youtube.com/shorts/lYl7meSrRTc |
+| 0 | 0 | ishowspeed | The moment IShowSpeed gave up in GTA 6 💀 | https://youtube.com/shorts/9nxnkpvBgL4 |
+| 0 | 0 | kaicenat | Kai Cenat: "No, no, I don't!" in GTA 6 😂 | https://youtube.com/shorts/EkqVfdfTzAo |
+| 0 | 0 | lacy | The moment Lacy gave up in GTA 6 😂 | https://youtube.com/shorts/UDUNerRrV2I |
+| 0 | 0 | asianjeff | AsianJeff: "How do I uncrouch again?" in GTA 6 💀 | https://youtube.com/shorts/wDWrz8BHK_w |
+| 0 | 0 | ishowspeed | IShowSpeed was NOT ready for this in GTA 6 🤣 | https://youtube.com/shorts/riAwOJfYZ6U |
+| 0 | 0 | clix | Clix vs the GTA 6 police 💀 | https://youtube.com/shorts/4SHTeRB8WRc |
+| 0 | 0 | lacy | Lacy completely lost it in GTA 6 😂 | https://youtube.com/shorts/xiqosQtqB50 |
+| 0 | 0 | top3 | Kai Cenat's 3 Craziest GTA 6 Moments So Far 😭💀 | https://youtube.com/shorts/aG9YPNP4j4I |
+| 0 | 0 | top3 | Lacy's 3 Craziest GTA 6 Moments So Far 😭💀 | https://youtube.com/shorts/5Gdjzr7I0fc |
+| 0 | 0 | top3 | IShowSpeed's 3 Craziest GTA 6 Moments So Far 😭💀 | https://youtube.com/shorts/aUJv9RRAcPI |
+| 0 | 0 | clix | Clix can't believe what just happened in GTA 6 💀 | https://youtube.com/shorts/MfapaiM5FVY |
+| 0 | 0 | kaicenat | Nobody warned Kai Cenat about this in GTA 6 😭💀 | https://youtube.com/shorts/PUfiT-WKacE |

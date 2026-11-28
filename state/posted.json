@@ -44,7 +44,14 @@
    "source": "https://www.twitch.tv/clix/clip/ConcernedDarkMagePeanutButterJellyTime-mNYVIXLMA54D52ZN",
    "publish_at": "2026-11-27T12:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "1860573091": {
    "at": "2026-11-22T20:54:42.973908+00:00",
@@ -116,7 +123,14 @@
    "source": "https://www.twitch.tv/yourragegaming/clip/JazzyRelatedPoxStrawBeary-PnTV6_GAv5gGNkci",
    "publish_at": "2026-11-27T04:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "4276206929": {
    "at": "2026-11-22T21:00:42.681185+00:00",
@@ -308,7 +322,14 @@
    "source": "https://www.twitch.tv/kaicenat/clip/ExquisiteInnocentGaragePoooound-mLDj-ot7Fg9JJjLA",
    "publish_at": "2026-11-26T12:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 3,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "2058409627": {
    "at": "2026-11-26T09:07:39.724937+00:00",
@@ -320,7 +341,14 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/ViscousStormySquirrelDancingBanana-2gkXgAHz-CwpC3GO",
    "publish_at": "2026-11-26T16:00:00Z",
    "campaign": false,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "4188544786": {
    "at": "2026-11-27T13:47:48.242493+00:00",
@@ -332,7 +360,14 @@
    "source": "https://www.twitch.tv/kaicenat/clip/UnusualConsiderateLionGingerPower-oJF7Ao2MX9omrH0x",
    "publish_at": "2026-11-28T00:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "1827983684": {
    "at": "2026-11-26T09:08:12.133701+00:00",
@@ -344,7 +379,14 @@
    "source": "https://www.twitch.tv/lacy/clip/SlickStylishBeaverStrawBeary-ljpqadoCXEhYwJx5",
    "publish_at": "2026-11-26T20:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "3080134111": {
    "at": "2026-11-26T09:15:52.395565+00:00",
@@ -356,7 +398,14 @@
    "source": "https://www.twitch.tv/asianjeff/clip/BlatantExquisiteMonitorGrammarKing-KZJb61NKnli7x9PO",
    "publish_at": "2026-11-27T08:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "2678721533": {
    "at": "2026-11-28T00:01:19.730219+00:00",
@@ -368,7 +417,14 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/LightEvilQueleaLitFam-ues9L-NlLxKDRclp",
    "publish_at": "2026-11-28T16:00:00Z",
    "campaign": false,
-   "alerted": false
+   "alerted": false,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "private"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "1122791762": {
    "at": "2026-11-26T09:09:56.402614+00:00",
@@ -380,7 +436,14 @@
    "source": "https://www.twitch.tv/clix/clip/UnusualMoistSharkBIRB-Wlz2wmgaTOQAniKu",
    "publish_at": "2026-11-27T00:00:00Z",
    "campaign": true,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "834307869": {
    "at": "2026-11-27T13:52:22.535545+00:00",
@@ -392,7 +455,14 @@
    "source": "https://www.twitch.tv/lacy/clip/DullCalmGullUWot-yyTc1tkQ0S4Gv-5E",
    "publish_at": "2026-11-28T08:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": false,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "private"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "1750599011": {
    "at": "2026-11-26T09:18:25.816442+00:00",
@@ -404,7 +474,14 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/LongHeartlessWhaleMau5-B9NBfqUvbpHRrgP4",
    "publish_at": "2026-11-26T09:17:21Z",
    "campaign": false,
-   "alerted": true
+   "alerted": true,
+   "stats": {
+    "views": 2,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "combo_32bf7f17e5ad": {
    "at": "2026-11-26T09:37:41.970311+00:00",
@@ -421,7 +498,14 @@
     "395630095",
     "3422080430",
     "4188544786"
-   ]
+   ],
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "combo_2ae7322b15d8": {
    "at": "2026-11-26T09:39:59.289323+00:00",
@@ -438,7 +522,14 @@
     "4141049941",
     "2915466825",
     "834307869"
-   ]
+   ],
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "combo_0d5ddc12ec16": {
    "at": "2026-11-27T13:50:44.637377+00:00",
@@ -450,12 +541,19 @@
    "source": "https://www.twitch.tv/ishowspeed/clip/BombasticSpookyAlpacaBibleThump-Ro8z9XgpJAAF_WGU",
    "publish_at": "2026-11-28T04:00:00Z",
    "campaign": false,
-   "alerted": false,
+   "alerted": true,
    "parts": [
     "2393476211",
     "2554501966",
     "2678721533"
-   ]
+   ],
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "public"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "3609102817": {
    "at": "2026-11-27T13:54:57.844964+00:00",
@@ -467,7 +565,14 @@
    "source": "https://www.twitch.tv/clix/clip/ExcitedAnimatedFennelCharlietheUnicorn-QA5ruBT2wWdQcrOM",
    "publish_at": "2026-11-28T12:00:00Z",
    "campaign": true,
-   "alerted": false
+   "alerted": false,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "private"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
   },
   "395630095": {
    "at": "2026-11-28T00:02:31.778251+00:00",
@@ -479,7 +584,42 @@
    "source": "https://www.twitch.tv/kaicenat/clip/MistyFastChickpeaBatChest-1l50Cnz_nbghKxmh",
    "publish_at": "2026-11-28T20:00:00Z",
    "campaign": true,
+   "alerted": false,
+   "stats": {
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "privacy": "private"
+   },
+   "stats_at": "2026-11-28T07:33:45.943930+00:00"
+  },
+  "2554501966": {
+   "at": "2026-11-28T07:36:29.037262+00:00",
+   "login": "ishowspeed",
+   "views_at_pick": 88934,
+   "hook": "IShowSpeed can't believe what just happened",
+   "title": "IShowSpeed can't believe what just happened in GTA 6 😭",
+   "youtube_id": "IhVunGLo2wk",
+   "source": "https://www.twitch.tv/ishowspeed/clip/HumbleGeniusStrawberryBleedPurple-CYhEi_LZY9mbAQxo",
+   "publish_at": "2026-11-29T00:00:00Z",
+   "campaign": false,
    "alerted": false
+  },
+  "combo_67aa9ffd5ea1": {
+   "at": "2026-11-28T07:38:19.090858+00:00",
+   "login": "versus",
+   "views_at_pick": 25465,
+   "hook": "2 streamers vs NPCs",
+   "title": "Lacy vs Clix: Who Handled Npcs Better in GTA 6? 😭",
+   "youtube_id": "aWq25cD9GGA",
+   "source": "https://www.twitch.tv/lacy/clip/FlaccidTubularGerbilMoreCowbell-ZnsEqpqa-F1GYqrF",
+   "publish_at": "2026-11-29T04:00:00Z",
+   "campaign": false,
+   "alerted": false,
+   "parts": [
+    "2026292110",
+    "1749979550"
+   ]
   }
  }
 }
