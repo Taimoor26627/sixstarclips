@@ -359,24 +359,16 @@
    "alerted": true
   },
   "2678721533": {
-   "at": "2026-11-26T00:13:30.999934+00:00",
+   "at": "2026-11-28T00:01:19.730219+00:00",
    "login": "ishowspeed",
-   "views_at_pick": 179656,
-   "hook": "IShowSpeed's worst GTA 6 moment yet",
-   "title": "IShowSpeed's worst GTA 6 moment yet 😂",
-   "youtube_id": "u6qwhZRH3ZU",
+   "views_at_pick": 184328,
+   "hook": "IShowSpeed was NOT ready for this",
+   "title": "IShowSpeed was NOT ready for this in GTA 6 🤣",
+   "youtube_id": "riAwOJfYZ6U",
    "source": "https://www.twitch.tv/ishowspeed/clip/LightEvilQueleaLitFam-ues9L-NlLxKDRclp",
-   "publish_at": "2026-11-26T16:00:00Z",
+   "publish_at": "2026-11-28T16:00:00Z",
    "campaign": false,
-   "alerted": false,
-   "stats": {
-    "views": 0,
-    "likes": 0,
-    "comments": 0,
-    "privacy": "private"
-   },
-   "stats_at": "2026-11-26T08:36:53.919908+00:00",
-   "old_channel": true
+   "alerted": false
   },
   "1122791762": {
    "at": "2026-11-26T09:09:56.402614+00:00",
@@ -424,7 +416,7 @@
    "source": "https://www.twitch.tv/kaicenat/clip/MistyFastChickpeaBatChest-1l50Cnz_nbghKxmh",
    "publish_at": "2026-11-27T16:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "parts": [
     "395630095",
     "3422080430",
@@ -441,7 +433,7 @@
    "source": "https://www.twitch.tv/lacy/clip/CredulousKawaiiTriangleFUNgineer-Zys54vtw1G4OmIkN",
    "publish_at": "2026-11-27T20:00:00Z",
    "campaign": true,
-   "alerted": false,
+   "alerted": true,
    "parts": [
     "4141049941",
     "2915466825",
@@ -474,6 +466,18 @@
    "youtube_id": "MfapaiM5FVY",
    "source": "https://www.twitch.tv/clix/clip/ExcitedAnimatedFennelCharlietheUnicorn-QA5ruBT2wWdQcrOM",
    "publish_at": "2026-11-28T12:00:00Z",
+   "campaign": true,
+   "alerted": false
+  },
+  "395630095": {
+   "at": "2026-11-28T00:02:31.778251+00:00",
+   "login": "kaicenat",
+   "views_at_pick": 41158,
+   "hook": "nobody warned Kai Cenat about this",
+   "title": "Nobody warned Kai Cenat about this in GTA 6 😭💀",
+   "youtube_id": "PUfiT-WKacE",
+   "source": "https://www.twitch.tv/kaicenat/clip/MistyFastChickpeaBatChest-1l50Cnz_nbghKxmh",
+   "publish_at": "2026-11-28T20:00:00Z",
    "campaign": true,
    "alerted": false
   }
